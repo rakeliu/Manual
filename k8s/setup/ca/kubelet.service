@@ -1,0 +1,25 @@
+[Unit]
+Description=Kubernetes Kubelet Server
+Documentation=https://github.com/kubernetes/kubernetes
+After=docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/ext/k8s/log/kubelet
+EnvironmentFile=/opt/k8s/conf/kubelet.conf
+ExecStart=/opt/k8s/bin/kubelet \
+  --hostname-override=${KUBELET_HOSTNAME_OVERRIDE} \
+  --pod_infra_container_image=${KUBELET_POD_INFRA_CONTAINER_IMAGE} \
+  --kubeconfig=${KUBELET_KUBECONFIG} \
+  --bootstrap-kubeconfig=${KUBELET_BOOTSTRAP_KUBECONFIG} \
+  --config=${KUBELET_CONFIG} \
+  --cert-dir=${KUBELET_CERT_DIR} \
+  --network_plugin=${KUBELET_NETWORK_PLUGIN} \
+  --log-dir=${KUBELET_LOG_DIR} \
+  --logtostderr=false \
+  --v=4
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

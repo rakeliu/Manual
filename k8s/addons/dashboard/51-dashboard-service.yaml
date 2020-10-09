@@ -1,0 +1,14 @@
+# dashboard service
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-4-ingress
+  namespace: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+spec:
+  selector:
+    k8s-app: kubernetes-dashboard
+  ports:
+  - port: 443
+    targetPort: https

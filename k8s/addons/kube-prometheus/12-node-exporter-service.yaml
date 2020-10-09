@@ -1,0 +1,18 @@
+# node-exporter headless service
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    k8s-app: node-exporter
+spec:
+  clusterIP: None
+  selector:
+    k8s-app: node-exporter
+  ports:
+  - name: http
+    port: 9100
+    targetPort: http

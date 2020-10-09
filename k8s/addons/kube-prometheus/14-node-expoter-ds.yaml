@@ -1,0 +1,68 @@
+# node-exporter DaemonSet
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: monitoring
+  labels:
+    k8s-app: node-exporter
+spec:
+  selector:
+    matchLabels:
+      k8s-app: node-exporter
+  template:
+    metadata:
+      labels:
+        k8s-app: node-exporter
+    spec:
+      hostNetwork: true
+      hostPID: true
+      serviceAccountName: node-exporter
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      containers:
+      - name: node-exporter
+        image: docker-hub:5000/prom/node-exporter:v1.0.1
+        args:
+        - "--path.procfs=/host/proc"
+        - "--path.sysfs=/host/sys"
+        - "--path.rootfs=/host/root"
+        - "--collector.filesystem.ignored-mount-points=^/(dev|proc|sys|/appdata/docker/.+)($|/)"
+        - "--collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)$"
+        ports:
+        - name: http
+          # ^nust be an IANA_SVC_NAME (at most 15 charaters, ...)
+          containerPort: 9100
+          hostPort: 9100
+        resources:
+          requests:
+            cpu: 100m
+            memory: 30Mi
+          limits:
+            cpu: 250m
+            memory: 50Mi
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: false
+        - name: sys
+          mountPath: /host/sys
+          readOnly: false
+        - name: root
+          mountPath: /host/root
+          readOnly: true
+          mountPropagation: HostToContainer
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: root
+        hostPath:
+          path: /

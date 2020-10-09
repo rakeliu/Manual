@@ -1,0 +1,56 @@
+---
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+    component: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+        component: core
+    spec:
+      initContainers:
+      - name: grafana-mkdir
+        image: docker-hub:5000/busybox:1.28.3
+        imagePullPolicy: IfNotPresent
+        command: ["mkdir", "-p", "/var/lib/grafana/dashboards"]
+        volumeMounts:
+        - name: grafana-persistent-storage
+          mountPath: /var/lib/grafana
+      containers:
+        - name: grafana
+          image: docker-hub:5000/grafana/grafana:7.1.3
+          ports:
+          - containerPort: 3000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+          - name: grafana-persistent-storage
+            mountPath: /var/lib/grafana
+          - name: grafana-dashboard-provider
+            mountPath: /etc/grafana/provisioning/dashboards
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      volumes:
+      - name: grafana-dashboard-provider
+        configMap:
+          name: grafana-dashboard-provider
+      - name: grafana-persistent-storage
+        persistentVolumeClaim:
+          claimName: grafana

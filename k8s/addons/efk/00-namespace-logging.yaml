@@ -1,0 +1,5 @@
+# deprecated. use namespace kube-system
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging

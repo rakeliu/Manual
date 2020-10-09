@@ -1,0 +1,25 @@
+#busybox-app-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: busybox
+    namespace: monitoring
+    labels:
+      run: busybox-app
+spec:
+  selector:
+    matchLabels:
+      run: busybox-app
+  template:
+    metadata:
+      labels:
+        run: busybox-app
+    spec:
+      containers:
+      - name: busybox
+        image: docker-hub:5000/busybox:1.28.3
+        command:
+          - sleep
+          - "3600"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always

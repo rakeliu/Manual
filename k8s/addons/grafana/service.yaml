@@ -1,0 +1,16 @@
+# for ingress more
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-4-ingress
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    k8s-app: grafana

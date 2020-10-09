@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: tomcat
+  namespace: test
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: test.k8s.vm
+    http:
+      paths:
+      - path: /tomcat
+        pathType: Prefix
+        backend:
+          serviceName: tomcat
+          servicePort: 8080

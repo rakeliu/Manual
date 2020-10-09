@@ -1,0 +1,33 @@
+{
+  "CN": "kubernetes",
+  "hosts": [
+    "127.0.0.1",
+    "192.168.176.34",
+    "192.168.176.35",
+    "192.168.176.36",
+    "192.168.176.37",
+    "192.168.176.38",
+    "192.168.176.39",
+    "192.168.176.40",
+    "192.168.176.41",
+    "10.15.0.1",
+    "kubernetes",
+    "kubernetes.default",
+    "kubernetes.default.svc",
+    "kubernetes.default.svc.cluster",
+    "kubernetes.default.svc.cluster.local"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "Chongqing",
+      "L": "Chongqing",
+      "O": "k8s",
+      "OU": "ymliu"
+    }
+  ]
+}

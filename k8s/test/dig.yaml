@@ -1,0 +1,25 @@
+#dig-app-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: dig-app
+  name: dig-app
+spec:
+  selector:
+    matchLabels:
+      run: dig-app
+  template:
+    metadata:
+      labels:
+        run: dig-app
+    spec:
+      containers:
+      - image: azukiapp/dig
+        name: dig-app
+        command:
+          - sleep
+          - "3600"
+        imagePullPolicy: IfNotPresent
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

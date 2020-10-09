@@ -1,0 +1,19 @@
+[Unit]
+Description=Etcd Server
+After=network.service
+After=network-online.service
+Wants=network-online.service
+Documentation=https://github.com/etcd-io/etcd
+
+[Service]
+Type=notify
+WorkingDirectory=/ext/etcd
+EnvironmentFile=/opt/k8s/conf/etcd.conf
+# set GOMAXPROCS to number of processes
+ExecStart=/bin/bash -c "GOMAXPROCS=1 /opt/k8s/bin/etcd"
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

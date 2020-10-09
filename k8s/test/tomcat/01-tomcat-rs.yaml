@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat
+  namespace: test
+  labels:
+    k8s-app: tomcat
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      k8s-app: tomcat
+  template:
+    metadata:
+      labels:
+        k8s-app: tomcat
+    spec:
+      containers:
+      - name: tomcat
+        image: docker-hub:5000/tomcat:10-jdk14-openjdk-oracle
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: ajp
+          containerPort: 8009

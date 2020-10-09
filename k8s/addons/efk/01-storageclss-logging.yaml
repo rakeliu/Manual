@@ -1,0 +1,98 @@
+# create autoscale persistentVolume
+---
+# RBAC
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-client-provisioner-system
+  namespace: kube-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nfs-client-provisioner-runner-system
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "update"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["create", "delete", "get", "list", "watch", "patch", "update"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: run-nfs-client-provisioner-system
+subjects:
+- kind: ServiceAccount
+  name: nfs-client-provisioner-system
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: nfs-client-provisioner-runner-system
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-provisioner-system
+  namespace: kube-system
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      k8s-app: nfs-provisioner-system
+  template:
+    metadata:
+      labels:
+        k8s-app: nfs-provisioner-system
+    spec:
+      serviceAccountName: nfs-client-provisioner-system
+      containers:
+      - name: nfs-client-provisioner-system
+        image: docker-hub:5000/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PROVISIONER_NAME
+          # this value is provided to storageclass calling
+          value: nfs-provisioner-system
+        - name: NFS_SERVER
+          value: 192.168.176.8
+        - name: NFS_PATH
+          value: /appdata/nfs
+        volumeMounts:
+        - name: nfs-client-root
+          mountPath: /persistentvolumes
+      volumes:
+      - name: nfs-client-root
+        nfs:
+          server: 192.168.176.8
+          path: /appdata/nfs
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-dynamic-system
+  namespace: kube-system
+  # set as default storageClass
+  #annotations:
+  #  storageclass.kubernetes.io/is-default-class: "true"
+# same as PROVISIONER_NAME upon
+provisioner: nfs-provisioner-system
+#reclaimPolicy: Retain

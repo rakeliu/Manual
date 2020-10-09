@@ -1,0 +1,17 @@
+{
+    "CN": "system:node:k8s-node01",
+    "hosts": [],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "CN",
+            "ST": "ChongQing",
+            "L": "ChongQing",
+            "O": "system:nodes",
+            "OU": "ymliu"
+        }
+      ]
+}

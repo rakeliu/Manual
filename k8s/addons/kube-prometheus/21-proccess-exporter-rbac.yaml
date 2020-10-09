@@ -1,0 +1,22 @@
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: proccess-exporter
+  namespace: monitoring
+
+---
+# ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: proccess-exporter
+rules:
+- apiGroups: ["authentication.k8s.io"]
+  resources: ["tokenviews"]
+  verbs: ["create"]
+- apiGroups: ["authorization.k8s.io"]
+  resources: ["subjectacceptreviews"]
+  verbs: ["create"]
+
+---

@@ -1,0 +1,39 @@
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/kubernetes/kubernetes
+After=kube-apiserver.service
+Wants=kube-apiserver.service
+
+[Service]
+EnvironmentFile=/opt/k8s/conf/kube.conf
+EnvironmentFile=/opt/k8s/conf/controller-manager.conf
+ExecStart=/opt/k8s/bin/kube-controller-manager \
+  --bind-address=127.0.0.1 \
+  --master=http://127.0.0.1:8080 \
+  --kubeconfig=${KUBE_CONTROLLER_CONFIG_FILE} \
+  --service-cluster-ip-range=${KUBE_SERVICE_CLUSTER_IP_RANGE} \
+  --cluster-cidr=${KUBE_PODS_CLUSTER_CIDR} \
+  --cluster-name=kubernetes \
+  --cluster-signing-cert-file=${CA_FILE} \
+  --cluster-signing-key-file=${CA_KEY_FILE} \
+  --experimental-cluster-signing-duration=8760h \
+  --root-ca-file=${CA_FILE} \
+  --client-ca-file=${CA_FILE} \
+  --service-account-private-key-file=${CA_KEY_FILE} \
+  --leader-elect=true \
+  --feature-gates=RotateKubeletServerCertificate=true \
+  --controllers=*,bootstrapsigner,tokencleaner \
+  --horizontal-pod-autoscaler-sync-period=10s \
+  --tls-cert-file=${KUBE_CONTROLLER_MANAGER_CERT_FILE} \
+  --tls-private-key-file=${KUBE_CONTROLLER_MANAGER_KEY_FILE} \
+  --use-service-account-credentials=true \
+  --alsologtostderr=true \
+  --logtostderr=false \
+  --log-dir=${KUBE_CONTROLLER_MANAGER_LOG_DIR} \
+  --v=4
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

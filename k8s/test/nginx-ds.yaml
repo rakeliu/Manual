@@ -1,0 +1,47 @@
+# nginx DaemonSet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  namespace: kube-system
+  labels:
+    k8s-app: nginx-svc
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  type: NodePort
+  selector:
+    k8s-app: nginx-svc
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ds
+  namespace: kube-system
+  labels:
+    k8s-app: nginx-svc
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    kubernetes.io/name: "Nginx"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: nginx-svc
+  template:
+    metadata:
+      labels:
+        k8s-app: nginx-svc
+    spec:
+      containers:
+      - name: nginx-ds
+        image: docker-hub:5000/nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

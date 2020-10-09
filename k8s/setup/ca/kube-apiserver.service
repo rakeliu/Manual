@@ -1,0 +1,44 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/kubernetes/kubernetes
+After=etcd.service
+Wants=etcd.service
+
+[Service]
+EnvironmentFile=/opt/k8s/conf/apiserver.conf
+ExecStart=/opt/k8s/bin/kube-apiserver \
+  --enable-admission-plugins=${KUBE_ADMISSION_CONTROL} \
+  --anonymous-auth=false \
+  --advertise-address=${KUBE_API_ADDRESS} \
+  --bind-address=${KUBE_API_ADDRESS} \
+  --authorization-mode=Node,RBAC \
+  --runtime-config=api/all=true \
+  --enable-bootstrap-token-auth \
+  --token-auth-file=${KUBE_TOKEN_AUTH_FILE} \
+  --service-cluster-ip-range=${KUBE_SERVICE_CLUSTER_IP_RANGE} \
+  --service-node-port-range=${KUBE_SERVICE_NODE_PORT} \
+  --tls-cert-file=${KUBE_TLS_CERT_FILE} \
+  --tls-private-key-file=${KUBE_TLS_KEY_FILE} \
+  --client-ca-file=${KUBE_CA_FILE} \
+  --kubelet-client-certificate=${KUBE_TLS_CERT_FILE} \
+  --kubelet-client-key=${KUBE_TLS_KEY_FILE} \
+  --service-account-key-file=${KUBE_CA_KEY_FILE} \
+  --etcd-servers=${KUBE_ETCD_SERVERS} \
+  --etcd-cafile=${KUBE_CA_FILE} \
+  --etcd-certfile=${ETCD_CERT_FILE} \
+  --etcd-keyfile=${ETCD_KEY_FILE} \
+  --allow-privileged=true \
+  --apiserver-count=3 \
+  --audit-policy-file=${KUBE_AUDIT_POLICY_CONF} \
+  --audit-log-maxage=30 \
+  --audit-log-maxbackup=3 \
+  --audit-log-maxsize=100 \
+  --audit-log-path=${KUBE_AUDIT_POLICY_PATH} \
+  --logtostderr=true \
+  --log-dir=${KUBE_LOG_DIR} \
+  --v=4
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

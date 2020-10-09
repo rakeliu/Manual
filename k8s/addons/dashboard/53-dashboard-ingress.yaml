@@ -1,0 +1,27 @@
+# dashboard ingress
+# https for frontend & backend
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-4-dashboard
+  namespace: kubernetes-dashboard
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/secret-backends: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts: ["dashboard.k8s.vm"]
+    secretName: kubernetes-dashboard-certs
+  rules:
+  - host: dashboard.k8s.vm
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: dashboard-4-ingress
+          servicePort: 443

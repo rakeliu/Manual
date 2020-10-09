@@ -1,0 +1,21 @@
+{
+    "CN" : "system:kube-controller-manager",
+    "hosts" : [
+        "192.168.176.34",
+        "192.168.176.35",
+        "192.168.176.36"
+    ],
+    "key" : {
+        "algo" : "rsa",
+        "size" : 2048
+    },
+    "names" : [
+        {
+            "C" : "CN",
+            "ST" : "ChongQing",
+            "L" : "ChongQing",
+            "O" : "system:kube-controller-manager",
+            "OU" : "ymliu"
+        }
+    ]
+}

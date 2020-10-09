@@ -6,27 +6,19 @@
 # FileName     : close_all.sh
 # Path         : ~/bin/
 # Author       : ymliu
-# Create Date  : 2020-08-31 14:34
+# Create Date  : 2018-1-16 15:19
 # WorkFlow     : To set all hostname of cluster to variant HOSTS.
 #                For each hostname, run shutdonw command by ssh skip localhost.
 #                Shutdown localhost by local command.
 
 # Step 1, set variants
 # HOSTS contains all hostname of cluster, array
-
-# declare -ra HOSTS=(`cat /etc/hosts | grep '192' | grep -v 'vip' | grep -v 'hub' | nl | sort -nr | awk '{print $3}'`)
-#declare -ra HOSTS=("docker-tpl" "docker-single" "k8s-node3" "k8s-node2" "k8s-node1" "k8s-master3" "k8s-master2" "k8s-master1")
-declare -ra HOSTS=(k8s-master3 k8s-master2 k8s-master1 docker-registry docker-tpl)
-
+HOSTS=("docker-template" "k8s-master1" "k8s-master2" "k8s-master3" "k8s-node1" "k8s-node2" "k8s-node3")
 # LOCALHOST is short name of localhost
 LOCALHOST=`hostname -s`
-
 # COMMAND is shutdown remote host by ssh
 # if cannot login by ssh, export timeout by ssh
 COMMAND="sudo shutdown -h now"
-
-# Delay interval between two hosts.
-DELAY_SECOND=2s
 
 echo "The script will shutdown all hosts."
 echo "------------------------------------------------"
@@ -36,7 +28,6 @@ do
   then
     echo -n "  shutting down host: ${host}.   "
     ssh ${LOGNAME}@${host} "${COMMAND}"
-    sleep ${DELAY_SECOND}
   fi
 done
 
