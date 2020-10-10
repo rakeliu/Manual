@@ -56,14 +56,12 @@ CNI 插件是 k8s 网络管理插件，此处采用 Calico，有些k8s集群也�
 
 升级所有组件至最新，禁用 firewalld、selinux、swap分区，保留 iptalbes。禁用 swap 分区可使用如下命令：
 
-```bash
-$sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-```
+`$ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab`
 
 优化内核参数：
 
 ```bash
-$sudo cat > /etc/sysctl.d/kubernetes.conf << EOF
+$ sudo cat > /etc/sysctl.d/kubernetes.conf << EOF
 net.ipv4.ip_forward = 1
 net.ipv4.tcp_tw_recycle=0
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -79,7 +77,7 @@ fs.file-max=52706963
 fs.nr_open=52706963
 EOF
 
-$sysctl -p /etc/sysctl.d/kubernetes.conf
+$ sysctl -p /etc/sysctl.d/kubernetes.conf
 ```
 
 ### 安装前的准备
@@ -87,34 +85,34 @@ $sysctl -p /etc/sysctl.d/kubernetes.conf
 - 配置各种目录
 
 ```bash
-#证书目录
-$sudo mkdir -p /opt/ssl
+# 证书目录
+$ sudo mkdir -p /opt/ssl
 
-#k8s 程序、服务配置、应用配置等目录
-$sudo mkdir -p /opt/k8s/{bin,conf,yaml,token}
+# k8s 程序、服务配置、应用配置等目录
+$ sudo mkdir -p /opt/k8s/{bin,conf,yaml,token}
 
-#calico 和 cni 目录
-$sudo mkdir -p /opt/calico/{bin,conf,yaml} /etc/calico
-$sudo mkdir -p /opt/cni/bin /etc/cni/net.d
+# calico 和 cni 目录
+$ sudo mkdir -p /opt/calico/{bin,conf,yaml} /etc/calico
+$ sudo mkdir -p /opt/cni/bin /etc/cni/net.d
 
-#各种工作、日志目录
-$sudo mkdir -p /ext/k8s/log/{apiserver,controller-manager,scheduler,kubelet} /ext/etcd /var/lib/calico
+# 各种工作、日志目录
+$ sudo mkdir -p /ext/k8s/log/{apiserver,controller-manager,scheduler,kubelet} /ext/etcd /var/lib/calico
 ```
 
 - 设置环境变量
 
 ```bash
-  $ sudo cat > /etc/profile.d/kubernetes.sh <<EOF
-  K8S_HOME=/opt/k8s
-  export PATH=$PATH:$K8S_HOME/bin
-  EOF
+$ sudo cat > /etc/profile.d/kubernetes.sh <<EOF
+K8S_HOME=/opt/k8s
+export PATH=$PATH:$K8S_HOME/bin
+EOF
 
-  $ sudo cat > vi /etc/profile.d/etcd.sh <<EOF
-  export ETCDCTL_API=3
-  EOF
+$ sudo cat > vi /etc/profile.d/etcd.sh <<EOF
+export ETCDCTL_API=3
+EOF
 
-  $ source /etc/profile.d/kubernetes.sh
-  $ source /etc/profile.d/etcd.sh
+$ source /etc/profile.d/kubernetes.sh
+$ source /etc/profile.d/etcd.sh
 ```
 
 ### [制作 **CA** 证书](ca/README.md)
@@ -124,3 +122,11 @@ $sudo mkdir -p /ext/k8s/log/{apiserver,controller-manager,scheduler,kubelet} /ex
 ### [安装 **ETCD** 服务](etcd/README.md)
 
 **ETCD** 服务安装在3个 Master节点即可。
+
+## 安装 Docker
+
+参照单机安装Docker，在每个节点，包括Worker节点安装即可。
+
+## [安装HAProxy、KeepAlived](HA.md)
+
+规划的Master节点为3个，需要通过集群软件设置VIP节点，这里采用HAProxy + KeepAlived来配置HA。

@@ -5,17 +5,19 @@
 ## 下载程序文件 cfssl
 
 ```bash
-$cd /opt/ssl
-$sudo curl http://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -o cfssl
-$sudo curl http://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o cfssljson
-$sudo curl http://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -o cfssl-certinfo  
+# 将程序文件下载到/opt/ssl目录中
+$ cd /opt/ssl
+$ sudo curl http://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -o cfssl
+$ sudo curl http://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o cfssljson
+$ sudo curl http://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -o cfssl-certinfo
 ```
 
 ## 创建生成 CA 证书的 json 配置文件
 
 ```bash
-$cd /opt/ssl
-$sudo cat > ca-config.json << EOF
+# 在/opt/ssl中创建文件
+$ cd /opt/ssl
+$ sudo cat > ca-config.json << EOF
 {
   "signing": {
     "default": {
@@ -44,8 +46,9 @@ EOF
 ## 创建生成 CA 证书签名请求（CSR）的 json 配置文件
 
 ```bash
-$cd /opt/ssl
-$sudo cat > ca-csr.json << EOF
+# 在/opt/ssl中创建文件
+$ cd /opt/ssl
+$ sudo cat > ca-csr.json << EOF
 {
   "CN": "kubernetes",
   "key": {
@@ -72,8 +75,9 @@ EOF
 ## 生成 CA 证书和私钥
 
 ```bash
-$cd /opt/ssl
-$sudo ./cfssl gencert -initca ca-csr.json | sudo ./cfssljson -bare ca
+# 在/opt/ssl中创建CA证书和私钥
+$ cd /opt/ssl
+$ sudo ./cfssl gencert -initca ca-csr.json | sudo ./cfssljson -bare ca
 ```
 
 将生成 **ca.pem** 和 **ca-key.pem** 两个文件，其中 **ca.pem** 是 **CA** 证书，**ca-key.pem** 是 **CA** 的私钥。

@@ -9,8 +9,8 @@
 ### 创建 ETCD 证书签名请求文件etcd-csr.json
 
 ```bash
-$cd /opt/ssl
-$sudo cat > etcd-csr.json << EOF
+$ cd /opt/ssl
+$ sudo cat > etcd-csr.json << EOF
 {
   "CN": "etcd",
   "hosts": [
@@ -45,8 +45,8 @@ EOF
 ### 生成证书和私钥
 
 ```bash
-$cd /opt/ssl
-$sudo ./cfssl gencert -ca=ca.pem \
+$ cd /opt/ssl
+$ sudo ./cfssl gencert -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
@@ -65,16 +65,16 @@ $sudo ./cfssl gencert -ca=ca.pem \
 　　分发 etcd 证书时同样需要将根证书 ca.pem 一道分发。
 
 ```bash
-$cd /opt/ssl
-$sudo chmod +r etcd-key.pem
-$declare MASTERS=(master 节点)
-$for host in ${MASTERS[@]}; do
+$ cd /opt/ssl
+$ sudo chmod +r etcd-key.pem
+$ declare MASTERS=(master 节点)
+$ for host in ${MASTERS[@]}; do
   scp ca.pem etcd.pem etcd-key.pem ${USER}@${host}:~/
   ssh ${USER}@${host} 'sudo chown root:root ca.pem etcd.pem etcd-key.pem; \
     sudo mv -f ca.pem etcd.pem etcd-key.pem /opt/ssl/; \
     sudo chmod 600 /opt/ssl/etcd-key.pem'
 done
-$sudo chmod 600 etcd-key.pem
+$ sudo chmod 600 etcd-key.pem
 ```
 
 ## 部署 ETCD 集群
@@ -88,17 +88,19 @@ $sudo chmod 600 etcd-key.pem
 　　下载后将程序包解压到 `/opt/etcd`（或链接到），再将相关程序文件链接至 `/opt/k8s/bin` 下，可直接在 PATH 中使用。
 
 ```bash
-$curl https://github.com/etcd-io/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
-$sudo tar -xvzf etcd-v3.4.13-linux-amd64.tar.gz -C /opt
-$sudo ln -s /opt/etcd-v3.4.13-linux-amd64 /opt/etcd
-$sudo ln -s /opt/etcd/{etcd,etcdctl} /opt/k8s/bin/
+# 下载程序包，解压
+$ curl https://github.com/etcd-io/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
+$ sudo tar -xvzf etcd-v3.4.13-linux-amd64.tar.gz -C /opt
+$ sudo ln -s /opt/etcd-v3.4.13-linux-amd64 /opt/etcd
+$ sudo ln -s /opt/etcd/{etcd,etcdctl} /opt/k8s/bin/
 ```
 
 　　准备 etcd 的工作目录，将其权限设置为**700**。从 v3.4.10 开始，工作目录的权限**必须**为700。
 
 ```bash
-$sudo mkdir -p /ext/etcd
-$sudo chmod 700 /ext/etcd
+# 创建工作目录，赋权
+$ sudo mkdir -p /ext/etcd
+$ sudo chmod 700 /ext/etcd
 ```
 
 ### 创建 etcd 服务的 system unit 文件
@@ -106,7 +108,7 @@ $sudo chmod 700 /ext/etcd
 　　服务单元文件位于`/etc/systemd/system/etcd.service`。
 
 ```bash
-$sudo cat > /etc/systemd/system/etcd.service <<EOF
+$ sudo cat > /etc/systemd/system/etcd.service <<EOF
 [Unit]
 Description= Etcd Service
 After=network.service
@@ -134,7 +136,7 @@ EOF
 　　环境变量文件位于`/opt/k8s/conf/etcd.conf`。
 
 ```bash
-$sudo cat > /opt/k8s/conf/etcd.conf <<EOF
+$ sudo cat > /opt/k8s/conf/etcd.conf <<EOF
 #[member]
 ETCD_NAME="k8s-master1"
 ETCD_DATA_DIR="/ext/etcd"
@@ -169,10 +171,10 @@ EOF
 　　参数说明如下：
 
 - ETCD_NAME: 每个etcd节点命名，集群中不能重复，可用主机名，也可用etcd-0, etcd-1等等。
-- 各个URLS中，涉及IP地址，一定要用本机IP，且在集群中可互通。
+- 各个URLS中，涉及IP地址，一定要用本机IP，且在集群中可相互访问。
 - ETCD_INITIAL_CLUSTER：表示整个集群所有节点，形如“节点名=https://节点地址:端口”， 各节点间用逗号（,）分隔。端口2379为对外服务端口，2380为集群内部各节点交互端口。
 - 认证部分：
-  - 所有带**ETCD_PEER**都表示集群内节点认证，而只有**ETCD**的表示用户侧认证。
+  - 所有**ETCD_PEER**打头的都表示集群内节点认证，而只有**ETCD**打头的表示用户侧认证。
   - **CERT_FILE**表示证书，即etcd.pem。
   - **KEY_FILE**表示私钥，即etcd-key.pem。
   - **TRUSTED_CA_FILE**表示根证书，即ca.pem。
@@ -185,9 +187,10 @@ EOF
 在每一个etcd节点启动服务，并设置为开机自启动方式。
 
 ```bash
-$sudo systemctl daemon-reload
-$sudo systemctl enable etcd
-$sudo systemctl start etcd
+# 启动服务
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable etcd
+$ sudo systemctl start etcd
 ```
 
 查看服务运行状态：`sudo systemctl status etcd`
@@ -201,22 +204,19 @@ $sudo systemctl start etcd
 检查etcd集群环境健康状况，在任一etcd节点执行命令：
 
 ```bash
-$sudo etcdctl --cacert=/opt/ssl/ca.pem \
+$ sudo etcdctl --cacert=/opt/ssl/ca.pem \
   --cert=/opt/ssl/etcd.pem \
   --key=/opt/ssl/etcd-key.pem
   --endpoints=https://192.168.176.35:2379,https://192.168.176.36:2379,https://192.168.176.37:2379 \
   endpoint health
 ```
 
-上述命令指定了大量参数，包括认证证书和etcd的endpoint，可将其设为环境变量，减少敲键盘数量。
+上述命令指定了大量参数，包括认证证书和etcd的endpoint，可将其设为环境变量，简化命令键入，防止出错。
 
 ```bash
-$export ETCD_ENDPOINTS="https://192.168.176.35:2379,https://192.168.176.36:2379,https://192.168.176.37:2379"
-$export ETCD_PARAMS="--cacert=/opt/ssl/ca.pem --cert=/opt/ssl/etcd.pem --key=/opt/ssl/etcd-key.pem --endpoints=${ETCD_ENDPOINTS}"
+# 定义环境变量，简化命令键入。
+$ export ETCD_ENDPOINTS="https://192.168.176.35:2379,https://192.168.176.36:2379,https://192.168.176.37:2379"
+$ export ETCD_PARAMS="--cacert=/opt/ssl/ca.pem --cert=/opt/ssl/etcd.pem --key=/opt/ssl/etcd-key.pem --endpoints=${ETCD_ENDPOINTS}"
 ```
 
-定义环境变量后，可简化命令长度。
-
-```bash
-$sudo etcdctl ${ETCD_PARAMS} member list
-```
+定义环境变量后，可简化命令长度：`$sudo etcdctl ${ETCD_PARAMS} member list`
