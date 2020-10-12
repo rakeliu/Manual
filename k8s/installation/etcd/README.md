@@ -1,16 +1,16 @@
-# 安装 **ETCD** 服务
+# 安装ETCD服务
 
-　　本章安装带鉴权的 **ETCD** 服务。
+　　本章安装带鉴权的ETCD服务。
 
 ## 制作 ETCD 所需证书
 
 　　既然是带鉴权的 ETCD 服务，证书是必不可少的前提条件。
 
-### 创建 ETCD 证书签名请求文件etcd-csr.json
+### 创建 ETCD 证书签名请求文件（etcd-csr.json）
 
-```bash
-$ cd /opt/ssl
-$ sudo cat > etcd-csr.json << EOF
+文件位于`/opt/ssl/etcd-csr.json`。
+
+```json
 {
   "CN": "etcd",
   "hosts": [
@@ -36,10 +36,9 @@ $ sudo cat > etcd-csr.json << EOF
     }
   ]
 }
-EOF
 ```
 
-- hosts 字段制定授权该证书的 etcd 节点的 ip 或主机名列表。这里应将运行 etcd 集群和请求 etcd 的客户端节点都包含在其中。（Master节点的 kube-apiserver **必须**访问 etcd，而 worker 节点的 kubelet 和 kube-proxy 则不需要）
+- hosts 字段制定授权该证书的etcd节点的ip或主机名列表。这里应将运行 etcd 集群和请求 etcd 的客户端节点都包含在其中。（Master节点的kube-apiserver**必须**访问etcd，而worker节点的kubelet和kube-proxy则不需要）
 - names 字段最好与 ca-csr.json 的一致，未测试过不一致的情况。
 
 ### 生成证书和私钥
@@ -53,16 +52,16 @@ $ sudo ./cfssl gencert -ca=ca.pem \
   etcd-csr.json | sudo ./cfssljson -bare etcd
 ```
 
-- 参数 profile 指向 **kubernetes**，即 ca-config.json 中策略名。
-- 执行后有一个警告（WARNING），提示证书有效范围为制定的 hosts，可忽略。
+- 参数 profile 指向**kubernetes**，即`ca-config.json`中策略名。
+- 执行后有一个警告（WARNING），提示证书有效范围为制定的hosts，可忽略。
 
-　　执行后得到证书 **etcd.pem** 和 密钥 **etcd-key.pem**。同样，密钥 etcd-key.pem 只有 root 用户拥有读权限。
+　　执行后得到证书**etcd.pem**和密钥**etcd-key.pem**。同样，密钥etcd-key.pem只有root用户拥有读权限。
 
 ### 分发证书
 
-　　etcd 证书是通过根证书 ca.pem 授权制作，因此在使用 etcd 证书时，需要根证书鉴权。
+　　etcd证书是通过根证书ca.pem授权制作，因此在使用etcd证书时，需要根证书鉴权。
 
-　　分发 etcd 证书时同样需要将根证书 ca.pem 一道分发。
+　　分发etcd证书时同样需要将根证书ca.pem一道分发。
 
 ```bash
 $ cd /opt/ssl
@@ -77,15 +76,15 @@ done
 $ sudo chmod 600 etcd-key.pem
 ```
 
-## 部署 ETCD 集群
+## 部署ETCD集群
 
-　　在每一个 etcd 的节点（即 master 节点）上执行以下步骤。
+　　在每一个etcd的节点（即master节点）上执行以下步骤。
 
 ### 下载程序文件
 
 　　从 [github.com/etcd-io/etcd/releases](https://github.com/etcd-io/etcd/releases)下载最新的 etcd **稳定版**，目前是 v3.4.13。
 
-　　下载后将程序包解压到 `/opt/etcd`（或链接到），再将相关程序文件链接至 `/opt/k8s/bin` 下，可直接在 PATH 中使用。
+　　下载后将程序包解压到`/opt/etcd`（或链接到），再将相关程序文件链接至 `/opt/k8s/bin` 下，可直接在PATH中使用。
 
 ```bash
 # 下载程序包，解压
@@ -95,7 +94,7 @@ $ sudo ln -s /opt/etcd-v3.4.13-linux-amd64 /opt/etcd
 $ sudo ln -s /opt/etcd/{etcd,etcdctl} /opt/k8s/bin/
 ```
 
-　　准备 etcd 的工作目录，将其权限设置为**700**。从 v3.4.10 开始，工作目录的权限**必须**为700。
+　　准备etcd的工作目录，将其权限设置为**700**。从v3.4.10开始，工作目录的权限**必须**为700。
 
 ```bash
 # 创建工作目录，赋权

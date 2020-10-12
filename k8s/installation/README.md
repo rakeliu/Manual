@@ -130,3 +130,7 @@ $ source /etc/profile.d/etcd.sh
 ## [安装HAProxy、KeepAlived](HA.md)
 
 规划的Master节点为3个，需要通过集群软件设置VIP节点，这里采用HAProxy + KeepAlived来配置HA。
+
+## [安装Master节点](MASTER.md)
+
+采用全手工配置，可根据环境自定义脚本。
