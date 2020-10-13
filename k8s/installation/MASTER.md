@@ -60,6 +60,6 @@ $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 ### [安装kube-apiserver组件](apiserver/README.md)
 
-### 安装kube-controller-manager组件
+### [安装kube-controller-manager组件](controller/README.md)
 
 ### 安装kube-scheduler组件
