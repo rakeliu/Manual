@@ -127,10 +127,14 @@ $ source /etc/profile.d/etcd.sh
 
 参照单机安装Docker，在每个节点，包括Worker节点安装即可。
 
-## [安装HAProxy、KeepAlived](HA.md)
+## [安装HAProxy、KeepAlived](master/HA.md)
 
 规划的Master节点为3个，需要通过集群软件设置VIP节点，这里采用HAProxy + KeepAlived来配置HA。
 
-## [安装Master节点](MASTER.md)
+## [安装Master节点](master/README.md)
 
 采用全手工配置，可根据环境自定义脚本。
+
+## 安装Worker节点各个组件
+
+同样采取全手工配置，可根据环境自定义脚本。

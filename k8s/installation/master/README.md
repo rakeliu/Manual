@@ -62,4 +62,6 @@ $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 ### [安装kube-controller-manager组件](controller/README.md)
 
-### 安装kube-scheduler组件
+### [安装kube-scheduler组件](scheduler/README.md)
+
+全部安装完成后，Master节点的主要组件就安装完成，可以开始部署Worker节点。

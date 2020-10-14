@@ -165,3 +165,17 @@ KUBE_PODS_CLUSTER_CIDR="10.16.0.0/16"
 ## log directory
 KUBE_CONTROLLER_MANAGER_LOG_DIR="/ext/k8s/controller"
 ```
+
+## 设置开机自启动并启动服务
+
+```bash
+# 刷新服务配置
+$ sudo systemctl daemon-realod
+# 设置开机自启动
+$ sudo systemctl enable kube-controller-manger
+# 启动服务
+$ sudo systemctl start kube-controller-manager
+# 查看服务状态和日志
+$ sudo systemctl status kube-controller-manager
+$ suso journalctl -f -n 1000 -u kube-controller-manager
+```
