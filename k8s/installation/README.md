@@ -135,6 +135,6 @@ $ source /etc/profile.d/etcd.sh
 
 采用全手工配置，可根据环境自定义脚本。
 
-## 安装Worker节点各个组件
+## [安装Worker节点各个组件](worker/README.md)
 
 同样采取全手工配置，可根据环境自定义脚本。

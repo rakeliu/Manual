@@ -91,7 +91,7 @@ WantedBy=multi-user.target
 
 环境变量文件位于```/opt/k8s/conf/kubelet.conf`。
 
-```env
+```conf
 ## kubernetes kubelet(minion) config
 #
 ## set ip of current minion
@@ -176,6 +176,8 @@ $ sudo journalctl -f -n 1000 -u kubelet
 
 在任意一个Master节点执行命令查看csr：`$ kubectl get csr`
 
+![get csr](../../../../resources/images/kubelet-get-csr.png)
+
 可以看到每一个kubelet节点的证书请求状态，最后一个字段`CONDITION`如果是`Pending`，表示该节点的TLS证书请求等待批准，使用下列命令批准请求。
 
 ```bash
@@ -186,5 +188,7 @@ $ kubectl get csr | grep 'Pending' | \
     awk 'NR>0{print $1}' | \
     xargs kubectl certificate approve
 ```
+
+![批准](../../../../resources/images/kubelet-approve.png)
 
 一旦批准CSR请求，可从日志中看到kubelet服务继续启动，**但是提示CNI网络未准备好**，需要安装CNI插件之后才行。

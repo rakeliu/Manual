@@ -106,7 +106,7 @@ WantedBy=multi-user.target
 
 文件位于`/opt/k8s/conf/kube-scheduler.conf`。
 
-```env
+```conf
 ##
 # The following values are used to configure the kubernetes scheduler
 #

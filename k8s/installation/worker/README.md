@@ -10,7 +10,7 @@ Master节点也可以复用为Worker节点，本文就采用Master\*3的方式�
 
 ## 安装ipvs
 
-在所有节点安装ipvs工具。
+在**所有**节点安装ipvs工具。
 
 ```bash
 # yum 在线安装
@@ -26,8 +26,8 @@ $ sudo yum install -y \
     libnetfilter_queue-1.0.2-2.el7_2.x86_64.rpm
 ```
 
-## 安装kubelet组件
+## [安装kubelet组件](kubelet/README.md)
 
-## 安装kube-proxy组件
+## [安装kube-proxy组件](kube-proxy/README.md)
 
 ## 部署CNI插件Calico

@@ -36,8 +36,7 @@ $ sudo chown -R haproxy:haproxy /ext/haproxy
 
 三个Master节点的配置文件内容相同，配置文件在`/etc/haproxy/haproxy.cfg`。
 
-```bash
-$ sudo vi /etc/haproxy/haproxy.cfg
+```conf
 #---------------------------------------------------------------------
 # Global settings
 #---------------------------------------------------------------------
@@ -120,9 +119,8 @@ KeepAlived在多个节点中只选取一个主节点，因此主节点与备节�
 
 ### 编辑配置文件
 
-```bash
+```conf
 # 主节点
-$ cat /etc/keepalived/keepalived.conf
 global_defs {
   router_id  lb-master-105
 }
@@ -149,7 +147,6 @@ vrrp_instance  VI-kube-master {
 }
 
 # 备节点
-$ cat /etc/keepalived/keepalived.conf
 global_defs {
   router_id  lb-master-105
 }

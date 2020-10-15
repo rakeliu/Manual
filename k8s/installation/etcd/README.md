@@ -1,10 +1,10 @@
 # 安装ETCD服务
 
-　　本章安装带鉴权的ETCD服务。
+本章安装带鉴权的ETCD服务。
 
 ## 制作 ETCD 所需证书
 
-　　既然是带鉴权的 ETCD 服务，证书是必不可少的前提条件。
+既然是带鉴权的 ETCD 服务，证书是必不可少的前提条件。
 
 ### 创建 ETCD 证书签名请求文件（etcd-csr.json）
 
@@ -82,9 +82,9 @@ $ sudo chmod 600 etcd-key.pem
 
 ### 下载程序文件
 
-　　从 [github.com/etcd-io/etcd/releases](https://github.com/etcd-io/etcd/releases)下载最新的 etcd **稳定版**，目前是 v3.4.13。
+从 [github.com/etcd-io/etcd/releases](https://github.com/etcd-io/etcd/releases)下载最新的 etcd **稳定版**，目前是 v3.4.13。
 
-　　下载后将程序包解压到`/opt/etcd`（或链接到），再将相关程序文件链接至 `/opt/k8s/bin` 下，可直接在PATH中使用。
+下载后将程序包解压到`/opt/etcd`（或链接到），再将相关程序文件链接至 `/opt/k8s/bin` 下，可直接在PATH中使用。
 
 ```bash
 # 下载程序包，解压
@@ -94,7 +94,7 @@ $ sudo ln -s /opt/etcd-v3.4.13-linux-amd64 /opt/etcd
 $ sudo ln -s /opt/etcd/{etcd,etcdctl} /opt/k8s/bin/
 ```
 
-　　准备etcd的工作目录，将其权限设置为**700**。从v3.4.10开始，工作目录的权限**必须**为700。
+准备etcd的工作目录，将其权限设置为**700**。从v3.4.10开始，工作目录的权限**必须**为700。
 
 ```bash
 # 创建工作目录，赋权
@@ -104,10 +104,9 @@ $ sudo chmod 700 /ext/etcd
 
 ### 创建 etcd 服务的 system unit 文件
 
-　　服务单元文件位于`/etc/systemd/system/etcd.service`。
+服务单元文件位于`/etc/systemd/system/etcd.service`。
 
-```bash
-$ sudo cat > /etc/systemd/system/etcd.service <<EOF
+```conf
 [Unit]
 Description= Etcd Service
 After=network.service
@@ -132,10 +131,9 @@ EOF
 
 ### 创建 etcd 服务环境变量文件
 
-　　环境变量文件位于`/opt/k8s/conf/etcd.conf`。
+环境变量文件位于`/opt/k8s/conf/etcd.conf`。
 
-```bash
-$ sudo cat > /opt/k8s/conf/etcd.conf <<EOF
+```conf
 #[member]
 ETCD_NAME="k8s-master1"
 ETCD_DATA_DIR="/ext/etcd"
@@ -166,8 +164,6 @@ ETCD_HEARTBEAT_INTERVAL=1000
 ETCD_ELECTION_TIMEOUT=5000
 EOF
 ```
-
-　　参数说明如下：
 
 - ETCD_NAME: 每个etcd节点命名，集群中不能重复，可用主机名，也可用etcd-0, etcd-1等等。
 - 各个URLS中，涉及IP地址，一定要用本机IP，且在集群中可相互访问。
