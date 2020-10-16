@@ -5,3 +5,7 @@
 ## 部署DNS解析
 
 [看这里](coreDNS/README.md)
+
+## 部署DashBoard
+
+[看这里](dashboard/README.md)
