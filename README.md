@@ -12,7 +12,7 @@ This manual only written in Simplified Chinese。
     - Prepare to installing keepalived.
     - Install kube-apiserver, kube-controller-manager, kube-scheduler.
     - Install CNI Calico.
-  - Deploy kubernetes addons.
+  - [Deploy kubernetes addons](k8s/addons/README.md).
     - Deploy coreDNS.
     - Deploy dashboard.
     - Deploy dynamic volume.
