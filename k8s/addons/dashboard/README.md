@@ -71,3 +71,63 @@ $ sudo openssl x509 -req -sha256 -days 3650 \
 - [33-rbac-roleBinding.yaml](33-rbac-roleBinding.yaml)
 - [34-rbac-clusterRole.yaml](34-rbac-clusterRole.yaml)
 - [35-rbac-clusterRoleBinding.yaml](35-rbac-clusterRoleBinding.yaml)
+
+### 权限文件组2
+
+包括admin-user的ServiceAccount, ClusterRoleBinding的RBAC定义，创建ServiceAccount为`admin-user`，用于在dashboard web中进行管理。
+
+文件包括：
+
+- [36-rbad-admin-serviceAccount.yaml](36-rbad-admin-serviceAccount.yaml)
+- [37-rbac-adm-clusterRoleBinding.yaml](37-rbac-adm-clusterRoleBinding.yaml)
+
+### DashBoard的Pod发布([41-dashboard-deployment.yaml](41-dashboard-deployment.yaml))
+
+发布DashBoard Web UI。
+
+相比默认模板，在镜像参数段增加了认证文件加载，目的是解决DashBoard的Ingress转发。DashBoard是采用https方式访问，token登录，而DashBoard的https认证证书原来是自动生成，这里采用指定证书。
+
+**请注意**：参数`--tls-cert-file`, `--tls-key-file`直接指向证书/密钥的文件名，无需指定目录；目录默认为`/certs`，通过secret进行mount。
+
+### Metric Scraper的Pod发布（[42-metric-scraper-deployment.yaml](2-metric-scraper-deployment.yaml)）
+
+仅仅只有DashBoard UI是不够的，这只能看到各种apiresources定义并进行管理。但是节点、pod的性能是抓取不到的，需要通过metric-scraper收集。
+
+> 实际上，metric-scraper仅仅是收集数据，而不是真正的抓取数据，抓取数据还需通过部署metric-server来解决。
+
+Metric Scraper没有什么特殊要求，参照原始模板即可。
+
+### 服务发布
+
+文件包括：
+
+- [51-dashboard-service.yaml](51-dashboard-service.yaml)
+- [52-metric-scraper-service.yaml](52-metric-scraper-service.yaml)
+- [53-dashboard-ingress.yaml](53-dashboard-ingress.yaml)
+
+前面两个服务发布没有什么特殊情况，都采用默认服务发布即可。这种情况下，只有集群内部可访问服务，要让集群外可访问，对dashboard创建一个ingress（首先要配置Ingress服务，后续介绍）。
+
+文件`53-dashboard-ingress.yaml`就是dashboard的ingress配置，学习该配置的过程较为艰难。
+
+dashboard是https访问，因此：
+
+- 在`annotations`中必须进行如下定义才能保证https的请求正确传递到ingress后端
+
+```yaml
+metadata:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/secret-backends: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+```
+
+- `spec`中增加`tls`段，用来标注哪些hosts需要哪个证书（secret配置）来加解密。这也是为什么要修改***安全文件1***，指定证书内容。
+
+```yaml
+spec:
+  tls:
+  - hosts: ["dashboard.k8s.vm"]
+    secretName: kubernetes-dashboard-certs
+```
