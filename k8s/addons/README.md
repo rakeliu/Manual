@@ -9,3 +9,7 @@
 ## 部署DashBoard
 
 [看这里](dashboard/README.md)
+
+## 动态存储卷
+
+[看这里](dynamicPV/README.md)
