@@ -14,7 +14,7 @@ spec:
       app.kubernetes.io/name: kube-state-metrics
   jobLabel: app.kubernetes.io/name
   endpoints:
-    - barerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/totken
+    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/totken
       honorLables: true
       interval: 30s
       port: https-main
@@ -25,7 +25,7 @@ spec:
       scrapeTimeout: 30s
       tlsConfig:
         insecureSkipVerify: true
-    - barerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       interval: 30s
       port: https-self
       schema: https

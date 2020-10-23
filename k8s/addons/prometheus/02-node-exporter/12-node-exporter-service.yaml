@@ -1,0 +1,17 @@
+# Service node-exporter
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: node-exporter
+    app.kubernetes.io/version: v1.0.1
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: node-exporter
+  ports:
+    - name: https
+      port: 9100
+      targetPort: https
