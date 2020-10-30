@@ -12,6 +12,6 @@ spec:
   selector:
     app.kubernetes.io/name: node-exporter
   ports:
-    - name: https
-      port: 9100
-      targetPort: https
+  - name: https
+    port: 9100
+    targetPort: https

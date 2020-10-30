@@ -14,20 +14,20 @@ spec:
       app.kubernetes.io/name: kube-state-metrics
   jobLabel: app.kubernetes.io/name
   endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/totken
-      honorLables: true
-      interval: 30s
-      port: https-main
-      relabelings:
-        - action: labeldrop
-          regex: (pod|service|endpoint|namespace)
-      schema: https
-      scrapeTimeout: 30s
-      tlsConfig:
-        insecureSkipVerify: true
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      interval: 30s
-      port: https-self
-      schema: https
-      tlsConfig:
-        insecureSkipVerify: true
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/totken
+    honorLables: true
+    interval: 30s
+    port: https-main
+    relabelings:
+    - action: labeldrop
+      regex: (pod|service|endpoint|namespace)
+    schema: https
+    scrapeTimeout: 30s
+    tlsConfig:
+      insecureSkipVerify: true
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 30s
+    port: https-self
+    schema: https
+    tlsConfig:
+      insecureSkipVerify: true

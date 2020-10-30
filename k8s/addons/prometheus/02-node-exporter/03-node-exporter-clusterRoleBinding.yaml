@@ -4,9 +4,9 @@ kind: ClusterRoleBinding
 metadata:
   name: node-exporter
 subjects:
-  - kind: ServiceAccount
-    name: node-exporter
-    namespace: monitoring
+- kind: ServiceAccount
+  name: node-exporter
+  namespace: monitoring
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
