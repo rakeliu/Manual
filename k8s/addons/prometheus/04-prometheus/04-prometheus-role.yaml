@@ -1,0 +1,13 @@
+# RBAC Role prometheus
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-k8s-config
+  namespace: monitoring
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmap
+  verbs:
+  - get

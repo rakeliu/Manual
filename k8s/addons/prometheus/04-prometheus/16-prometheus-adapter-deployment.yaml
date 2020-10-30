@@ -1,0 +1,54 @@
+# Deployment prometheus-adapter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-adapter
+  namespace: monnitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: prometheus-adapter
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        name: prometheus-adapter
+    spec:
+      serviceAccountName: prometheus-adapter
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+      - name: prometheus-adapter
+        image: directxman12/k8s-prometheus-adapter:v0.8.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - --cert-dir=/var/run/serving-cert
+        - --config=/etc/adapter/config.yaml
+        - --logtostderr=true
+        - --metrics-relist-interval=1m
+        - --prometheus-url=http://prometheus-k8s.monitoring.svc.cluster.local:9090/
+        - --secure-port=6443
+        ports:
+        - containerPort: 6443
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmpfs
+          readOnly: false
+        - mountPath: /var/run/serving-cert
+          name: volume-serving-cert
+          readOnly: false
+        - mountPath: /etc/adapter
+          name: config
+          readOnly: false
+      volumes:
+      - name: tmpfs
+        emptyDir: {}
+      - name: volume-serving-cert
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: adapter-config
