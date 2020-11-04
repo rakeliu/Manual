@@ -19,6 +19,7 @@ spec:
       namespace: monitoring
       port: web
   podMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
   probeNamespaceSelector: {}
   probSelector: {}
   serviceMonitorNamespaceSelector: {}
