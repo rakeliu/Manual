@@ -1,0 +1,12 @@
+# StorageClass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-dynamic-monitoring
+  namespace: monitoring
+  ## set as default storageClass
+  # annotations:
+  #   storageclass.kuberentes.io/is-default-class: "true"
+## same as PROVISIONER_NAME in deployment
+provisioner: nfs-provisioner-monitoring
+allowVolumeExpansion: true

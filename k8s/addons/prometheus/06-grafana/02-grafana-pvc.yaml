@@ -1,0 +1,14 @@
+# PersistentVolumeClaim, grafana
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-claim
+  namespace: monitoring
+spec:
+  ## same as storage define name
+  storageClassName: nfs-dynamic-monitoring
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

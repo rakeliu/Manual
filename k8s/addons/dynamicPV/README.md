@@ -184,4 +184,13 @@ spec:
 
 在pod发布（Deployment, Daemon, Job等）时，直接使用pvc即可，与常规无异。
 
+```yaml
+...
+      volumes:
+      - nane: grafana-storage
+        persistentVolumeClaim:
+          claimName: grafana-claim
+...
+```
+
 如果将StorageClass定义为默认，则无需定义pvc，直接在pod中使用，甚至不用指定StorageClass。

@@ -1,0 +1,18 @@
+# Ingress, grafana
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-4-grafana
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: grafana.k8s.vm
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: grafana-4-ingress
+          servicePort: 3000
