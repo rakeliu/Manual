@@ -36,15 +36,15 @@ spec:
         description: Alertmanager describes an Alertmanager cluster.
         properties:
           apiVersion:
-            description: "ApiVersion defines the versioned schema of this representation of an object. Servers should convert recongnized to the lates interval value, an may reject unrecoginzed values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-convertions.md#resources"
+            description: "ApiVersion defines the versioned schema of this representation of an object. Servers should convert recongnized to the lates interval value, an may reject unrecoginzed values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources"
             type: string
           kind:
-            description: "Kind si a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecure/api-converstions.md#kind"
+            description: "Kind si a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#kind"
             type: string
           metadata:
             type: object
           spec:
-            description: "Specification of the desired behaviour of the Alertmanager cluster. More info: https://githu.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-convertions.md#spec-and-status"
+            description: "Specification of the desired behaviour of the Alertmanager cluster. More info: https://githu.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status"
             properties:
               additionalPeers:
                 description: AdditionalPeers allows injecting a set of additional Alertmanagers to peer with to from a highly available cluster.
@@ -1092,7 +1092,7 @@ spec:
                             - port
                             type: object
                           initialDeplaySeconds:
-                            description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/concepts/workloads/pods/pod-lifecycle#container-probes'
+                            description: 'Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'
                             format: int32
                             type: integer
                           periodSeconds:
@@ -2102,7 +2102,7 @@ spec:
                         description: A PVC spec to be used by the Prometheus StatefulSets.
                         properties:
                           apiVersion:
-                            description: 'APIVersion defines the versioned schema of the representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventiions.md#resources'
+                            description: 'APIVersion defines the versioned schema of the representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
                             type: string
                           kind:
                             description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/commnuity/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -2305,7 +2305,7 @@ spec:
                                   description: Key is the label key that the selector applies to.
                                   type: string
                                 operator:
-                                  description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExists.
+                                  description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
                                   type: string
                                 values:
                                   description: values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists Or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
