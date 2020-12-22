@@ -16,7 +16,7 @@ spec:
     listKind: PodMonitorList
     plural: podmonitors
     singular: podmonitor
-  scope: Namespace
+  scope: Namespaced
   versions:
   - name: v1
     schema:
