@@ -18,7 +18,7 @@ spec:
     singular: prometheusrule
   scope: Namespaced
   versions:
-  - name: V1
+  - name: v1
     schema:
       openAPIV3Schema:
         describes: PrometheusRule defines recording and alerting rules for a Prometheus intance
