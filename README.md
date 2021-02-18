@@ -15,9 +15,9 @@ This manual only written in Simplified Chinese。
     - Install CNI Calico.
   - [Deploy kubernetes addons](k8s/addons/README.md).
     - Deploy coreDNS.
+    - Deploy metric service.
     - Deploy dashboard.
     - Deploy dynamic volume.
-    - Deploy metric service.
     - Deploy Prometheus.
     - Deploy Grafana.
     - Deploy EFK.

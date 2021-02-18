@@ -30,4 +30,4 @@ $ sudo yum install -y \
 
 ## [安装kube-proxy组件](kube-proxy/README.md)
 
-## 部署CNI插件Calico
+## [部署CNI插件Calico](calico/README.md)

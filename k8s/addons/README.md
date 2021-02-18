@@ -6,6 +6,10 @@
 
 [看这里](coreDNS/README.md)
 
+## 部署度量服务
+
+[看这里](metrics/README.md)
+
 ## 部署DashBoard
 
 [看这里](dashboard/README.md)
@@ -14,6 +18,6 @@
 
 [看这里](dynamicPV/README.md)
 
-## 部署度量服务
+## 部署监控（Prometheus + Grafana）
 
-[看这里](metrics/README.md)
+[看这里](prometheus/README.md)
