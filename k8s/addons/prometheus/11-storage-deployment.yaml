@@ -16,10 +16,11 @@ spec:
       labels:
         k8s-app: nfs-provisioner-monitoring
     spec:
-      serviceAccountName: nfs-provisioner-monitoring
+      serviceAccountName: nfs-client-provisioner-monitoring
       containers:
       - name: nfs-client-provisioner-monitoring
-        image: quay.io/external_storage/nfs_client-provisioner:v3.1.0-k8s1.11
+        image: quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
+        #image: docker-hub:5000/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
         imagePullPolicy: IfNotPresent
         env:
         - name: PROVISIONER_NAME

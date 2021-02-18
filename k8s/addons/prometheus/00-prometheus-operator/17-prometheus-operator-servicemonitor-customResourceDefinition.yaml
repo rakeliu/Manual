@@ -46,7 +46,7 @@ spec:
                           description: The secret in the service monitor namespace that contains the password for authentication.
                           properties:
                             key:
-                              description: The key of the secret to select from. Must be a valid secret key.
+                              description: The key of the secret to select from.  Must be a valid secret key.
                               type: string
                             name:
                               description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
@@ -61,7 +61,7 @@ spec:
                           description: The secret in the service monitor namespace that contains the username for authentication.
                           properties:
                             key:
-                              description: The key of the secret to select from. Must be a valid secret key.
+                              description: The key of the secret to select from.  Must be a valid secret key.
                               type: string
                             name:
                               description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
@@ -77,10 +77,10 @@ spec:
                       description: File to read bearer token for scraping targets.
                       type: string
                     bearerTokenSecret:
-                      description: Secret to mount to read rearer token for scraping targets. The secret needs to be in the same namespace as the service monitor and accessible by the Prometheus Operator.
+                      description: Secret to mount to read bearer token for scraping targets. The secret needs to be in the same namespace as the service monitor and accessible by the Prometheus Operator.
                       properties:
                         key:
-                          description: The key of the secret to select from. Must be a valid secret key.
+                          description: The key of the secret to select from.  Must be a valid secret key.
                           type: string
                         name:
                           description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
@@ -103,7 +103,7 @@ spec:
                     metricRelabelings:
                       description: MetricRelabelConfigs to apply to samples before ingestion.
                       items:
-                        description: 'RelabelConfig allows dynamic rewriting of the label set, being applied to samples before ingestion. It defines `<metric_relabel_configs>`-section of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/#metric_relabel_configs'
+                        description: 'RelabelConfig allows dynamic rewriting of the label set, being applied to samples before ingestion. It defines `<metric_relabel_configs>`-section of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs'
                         properties:
                           action:
                             description: Action to perform based on regex matching. Default is 'replace'
@@ -116,7 +116,7 @@ spec:
                             description: Regular expression against which the extracted value is matched. Default is '(.*)'
                             type: string
                           replacement:
-                            description: Replacement value againt which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
+                            description: Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
                             type: string
                           separator:
                             description: Separator placed between concatenated source label values. default is ';'.
@@ -127,7 +127,7 @@ spec:
                               type: string
                             type: array
                           targetLabel:
-                            description: Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are availabel.
+                            description: Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
                             type: string
                         type: object
                       type: array
@@ -150,10 +150,10 @@ spec:
                     relabelings:
                       description: 'RelabelConfigs to apply to samples before scraping. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config'
                       items:
-                        description: 'RelabelConfig allows dynamic rewriting of the label set, being applied to samples before ingestion. It defines `<metric_relabel_configs>`-section of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/#metric_relabel_configs'
+                        description: 'RelabelConfig allows dynamic rewriting of the label set, being applied to samples before ingestion. It defines `<metric_relabel_configs>`-section of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs'
                         properties:
                           action:
-                            description: Action to perform based on regext matching. Default is 'replace'
+                            description: Action to perform based on regex matching. Default is 'replace'
                             type: string
                           modulus:
                             description: Modulus to take of the hash of the source label values.
@@ -163,7 +163,7 @@ spec:
                             description: Regular expression against which the extracted value is matched. Default is '(.*)'
                             type: string
                           replacement:
-                            description: Replacement value against which a regex replace is performed if the regular rexpression matches. Regex capture groups are availabel. Default is '$1'
+                            description: Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'
                             type: string
                           separator:
                             description: Separator placed between concatenated source label values. default is ';'.
@@ -174,12 +174,12 @@ spec:
                               type: string
                             type: array
                           targetLabel:
-                            description: Label to which the resulting value is written in a replace action. It is mandatory for replace actions. REgex capture groups are availabel.
+                            description: Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available.
                             type: string
                         type: object
                       type: array
                     scheme:
-                      description: HTTP Scheme to use for scraping.
+                      description: HTTP scheme to use for scraping.
                       type: string
                     scrapeTimeout:
                       description: Timeout after which the scrape is ended
@@ -206,7 +206,7 @@ spec:
                                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
                                   type: string
                                 optional:
-                                  description: Specify whether the configMap or its key must be defined
+                                  description: Specify whether the ConfigMap or its key must be defined
                                   type: boolean
                               required:
                               - key
@@ -215,7 +215,7 @@ spec:
                               description: Secret containing data to use for the targets.
                               properties:
                                 key:
-                                  description: The key of the secret to select from. Must be a valid secret key.
+                                  description: The key of the secret to select from.  Must be a valid secret key.
                                   type: string
                                 name:
                                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
@@ -231,7 +231,7 @@ spec:
                           description: Path to the CA cert in the Prometheus container to use for the targets.
                           type: string
                         cert:
-                          description: Strut containing the client cert file for the targets.
+                          description: Struct containing the client cert file for the targets.
                           properties:
                             configMap:
                               description: ConfigMap containing data to use for the targets.
@@ -252,7 +252,7 @@ spec:
                               description: Secret containing data to use for the targets.
                               properties:
                                 key:
-                                  description: The key of the secret to select from. Must be a valid secret key.
+                                  description: The key of the secret to select from.  Must be a valid secret key.
                                   type: string
                                 name:
                                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
@@ -277,10 +277,10 @@ spec:
                           description: Secret containing the client key file for the targets.
                           properties:
                             key:
-                              description: The key of the secret to select from. Must be a valid secret key.
+                              description: The key of the secret to select from.  Must be a valid secret key.
                               type: string
                             name:
-                              description: 'Name of teh referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
                               type: string
                             optional:
                               description: Specify whether the Secret or its key must be defined
@@ -315,7 +315,7 @@ spec:
                   type: string
                 type: array
               sampleLimit:
-                description: SampleLimit defines pre-scrape limit on number of scraped samples that will be accepted.
+                description: SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
                 format: int64
                 type: integer
               selector:
