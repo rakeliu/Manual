@@ -1,4 +1,5 @@
 # Manual
+
 For all installations and configurations and manual by self.
 
 This manual only written in Simplified Chinese。

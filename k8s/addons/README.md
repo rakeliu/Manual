@@ -13,3 +13,7 @@
 ## 动态存储卷
 
 [看这里](dynamicPV/README.md)
+
+## 部署度量服务
+
+[看这里](metrics/README.md)
