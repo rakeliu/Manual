@@ -2,60 +2,88 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 1.9.7
   name: kube-state-metrics
   namespace: monitoring
-  labels:
-    app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 1.9.7
 spec:
   replicas: 1
   selector:
     matchLabels:
+      app.kubernetes.io/component: exporter
       app.kubernetes.io/name: kube-state-metrics
-  templates:
+      app.kubernetes.io/part-of: kube-prometheus
+  template:
     metadata:
       labels:
+        app.kubernetes.io/component: exporter
         app.kubernetes.io/name: kube-state-metrics
+        app.kubernetes.io/part-of: kube-prometheus
+        app.kubernetes.io/version: 1.9.7
     spec:
-      serviceAccountName: kube-state-metrics
-      nodeSelector:
-        kubernetes.io/os: linux
       containers:
-      - name: kube-state-metrics
-        image: quay.io/coreos/kube-state-metrics:v1.9.7
-        #image: docker-hub:5000/coreos/kube-state-metrics:v1.9.7
-        imagePullPolicy: IfNotPresent 
-        args:
+      - args:
         - --host=127.0.0.1
         - --port=8081
         - --telemetry-host=127.0.0.1
         - --telemetry-port=8082
-        securityContext:
-          runAsUser: 65534
-      - name: kube-rbac-proxy-main
-        image: quay.io/brancz/kube-rbac-proxy:v0.6.0
-        imagePullPolicy: IfNotPresent
-        args:
+        #image: quay.io/coreos/kube-state-metrics:v1.9.7
+        image: docker-hub:5000/coreos/kube-state-metrics:v1.9.7
+        name: kube-state-metrics
+        resources:
+          limits:
+            cpu: 100m
+            memory: 250Mi
+          requests:
+            cpu: 10m
+            memory: 190Mi
+      - args:
         - --logtostderr
         - --secure-listen-address=:8443
         - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
         - --upstream=http://127.0.0.1:8081/
+        #image: quay.io/brancz/kube-rbac-proxy:v0.8.0
+        image: docker-hub:5000/quay.io/brancz/kube-rbac-proxy:v0.8.0
+        name: kube-rbac-proxy-main
         ports:
         - containerPort: 8443
           name: https-main
+        resources:
+          limits:
+            cpu: 20m
+            memory: 40Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
         securityContext:
-          runAsUser: 65534
-      - name: kube-rbac-proxy-self
-        image: quay.io/brancz/kube-rbac-proxy:v0.8.0
-        #image: docker-hub:5000/quay.io/brancz/kube-rbac-proxy:v0.6.0
-        imagePullPolicy: IfNotPresent
-        args:
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+      - args:
         - --logtostderr
         - --secure-listen-address=:9443
         - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
         - --upstream=http://127.0.0.1:8082/
+        #image: quay.io/brancz/kube-rbac-proxy:v0.8.0
+        image: docker-hub:5000/quay.io/brancz/kube-rbac-proxy:v0.8.0
+        name: kube-rbac-proxy-self
         ports:
         - containerPort: 9443
           name: https-self
+        resources:
+          limits:
+            cpu: 20m
+            memory: 40Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
         securityContext:
-          runAsUser: 65534
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+      nodeSelector:
+        kubernetes.io/os: linux
+      serviceAccountName: kube-state-metrics
