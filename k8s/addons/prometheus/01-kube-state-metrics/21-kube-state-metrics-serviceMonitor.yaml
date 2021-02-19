@@ -3,31 +3,35 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
+  labels:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 1.9.7
   name: kube-state-metrics
   namespace: monitoring
-  labels:
-    app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 1.9.7
 spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: kube-state-metrics
-  jobLabel: app.kubernetes.io/name
   endpoints:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/totken
-    honorLables: true
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    honorLabels: true
     interval: 30s
     port: https-main
     relabelings:
     - action: labeldrop
       regex: (pod|service|endpoint|namespace)
-    schema: https
+    scheme: https
     scrapeTimeout: 30s
     tlsConfig:
       insecureSkipVerify: true
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     interval: 30s
     port: https-self
-    schema: https
+    scheme: https
     tlsConfig:
       insecureSkipVerify: true
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: exporter
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/part-of: kube-prometheus

@@ -23,6 +23,7 @@ spec:
       containers:
       - name: kube-state-metrics
         image: quay.io/coreos/kube-state-metrics:v1.9.7
+        #image: docker-hub:5000/coreos/kube-state-metrics:v1.9.7
         imagePullPolicy: IfNotPresent 
         args:
         - --host=127.0.0.1
@@ -45,7 +46,8 @@ spec:
         securityContext:
           runAsUser: 65534
       - name: kube-rbac-proxy-self
-        image: quay.io/brancz/kube-rbac-proxy:v0.6.0
+        image: quay.io/brancz/kube-rbac-proxy:v0.8.0
+        #image: docker-hub:5000/quay.io/brancz/kube-rbac-proxy:v0.6.0
         imagePullPolicy: IfNotPresent
         args:
         - --logtostderr
