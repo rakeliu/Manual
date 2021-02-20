@@ -2,22 +2,22 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
+  labels:
+    app.kubernetes.io/name: kube-scheduler
   name: kube-scheduler
   namespace: monitoring
-  labels:
-    k8s-app: kube-scheduler
 spec:
-  jobLabel: k8s-app
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 30s
+    port: https-metrics
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
+  jobLabel: app.kubernetes.io/name
   namespaceSelector:
     matchNames:
     - kube-system
   selector:
     matchLabels:
-      k8s-app: kube-scheduler
-  endpoints:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    interval: 30s
-    port: https-metrics
-    schema: https
-    tlsConfig:
-      insecureSkipVerify: true
+      app.kubernetes.io/name: kube-scheduler

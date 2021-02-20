@@ -2,19 +2,11 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
+  labels:
+    app.kubernetes.io/name: apiserver
   name: kube-apiserver
   namespace: monitoring
-  labels:
-    k8s-app: apiserver
 spec:
-  jobLable: component
-  namespaceSelector:
-    matchNames:
-    - default
-  selector:
-    matchLabels:
-      component: apiserver
-      provider: kubernetes
   endpoints:
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     interval: 30s
@@ -24,7 +16,7 @@ spec:
       sourceLabels:
       - __name__
     - action: drop
-      regex: scheduler_(e2e_scheduling_latency_microseconds|scheduling_algorithm_predicate_evaluation|scheduling_algorithm_priority_evaluation|scheduling_algorithm_preemption_evaluation|scheduling_algorithm_latency_microseconds|binding_latecy_microseconds|scheduling_latency_seconds)
+      regex: scheduler_(e2e_scheduling_latency_microseconds|scheduling_algorithm_predicate_evaluation|scheduling_algorithm_priority_evaluation|scheduling_algorithm_preemption_evaluation|scheduling_algorithm_latency_microseconds|binding_latency_microseconds|scheduling_latency_seconds)
       sourceLabels:
       - __name__
     - action: drop
@@ -72,4 +64,12 @@ spec:
     scheme: https
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      serviceName: kubernetes
+      serverName: kubernetes
+  jobLabel: component
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      component: apiserver
+      provider: kubernetes
