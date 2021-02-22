@@ -9,4 +9,4 @@ metadata:
   #   storageclass.kuberentes.io/is-default-class: "true"
 ## same as PROVISIONER_NAME in deployment
 provisioner: nfs-provisioner-monitoring
-allowVolumeExpansion: true
+#allowVolumeExpansion: true
