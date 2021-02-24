@@ -1,7 +1,7 @@
 # blackbox-exporter config
 apiVersion: v1
 data:
-  config.yaml: |-
+  config.yml: |-
     "modules":
       "http_2xx":
         "http":
@@ -12,7 +12,7 @@ data:
           "method": "POST"
           "preferred_ip_protocol": "ip4"
         "prober": "http"
-      "irc_nanner":
+      "irc_banner":
         "prober": "tcp"
         "tcp":
           "preferred_ip_protocol": "ip4"
@@ -20,14 +20,14 @@ data:
           - "send": "NICK prober"
           - "send": "USER prober prober prober :prober"
           - "expect": "PING :([^ ]+)"
-          - "send": "PONG ${1}"
+            "send": "PONG ${1}"
           - "expect": "^:[^ ]+ 001"
       "pop3s_banner":
         "prober": "tcp"
         "tcp":
           "preferred_ip_protocol": "ip4"
           "query_response":
-          - "expect": "^OK"
+          - "expect": "^+OK"
           "tls": true
           "tls_config":
             "insecure_skip_verify": false
