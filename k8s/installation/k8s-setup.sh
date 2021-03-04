@@ -2,6 +2,13 @@
 
 # This script is used for setup k8s+calico all configurations
 # all sets are same build in all nodes
+#
+# FileName     : k8s-setup.sh
+# Path         : ~/bin/
+# Author       : ymliu
+# Create Date  : 2021-03-03 15:13
+# WorkFlow     : To clear installation information & setup k8s with calico.
+#                per service install on each hosts & startup service.
 
 function clear_all()
 {
@@ -86,21 +93,27 @@ function init_template()
   echo "-------------------------------------------------------------"
   echo ">> 1.1 Modify file  .bashrc"
   local -r BASHRC_FILE="/home/${USER}/.bashrc"
-
+  
+  local SED_PARAM=""
+  
   echo "  >> 1.1.1 add declare MASTERS..."
-  sed -i "/^# export SYSTEMD_PAGER/adeclare -a MASTERS=(${MASTERS[@]})" ${BASHRC_FILE}
+  SED_PARAM="/^# export SYSTEMD_PAGER/adeclare -a MASTERS=(`echo ${MASTERS[@]}`)"
+  #sed -i "/^# export SYSTEMD_PAGER/adeclare -a MASTERS=(${MASTERS[@]})" ${BASHRC_FILE}
+  sed -i "${SED_PARAM}" ${BASHRC_FILE}
 
   echo "-------------------------------------------------------------"
   echo "  >> 1.1.2 add declare NODES..."
-  sed -i "/^declare -a MASTERS/adeclare -a NODES=(${NODES[@]})" ${BASHRC_FILE}
+  SED_PARAM="/^declare -a MASTERS/adeclare -a NODES=(`echo ${NODES[@]}`)"
+  #sed -i "/^declare -a MASTERS/adeclare -a NODES=(${NODES[@]})" ${BASHRC_FILE}
+  sed -i "${SED_PARAM}" ${BASHRC_FILE}
 
   echo "-------------------------------------------------------------"
   echo "  >> 1.1.3 add alias masterExec..."
-  sed -i "/^alias log=.*$/aalias masterExec='_f() { for host in \"\${MASTERS[@]}\";do ssh ${USER}@\${host} \"sudo \$1\"; done; }; _f'" ${BASHRC_FILE}
+  sed -i "/^alias log=.*$/aalias masterExec='_f() { for host in \"\${MASTERS[@]}\";do echo \"Executing in host: \${host}\"; ssh ${USER}@\${host} \"sudo \$@\"; echo ''; done; }; _f'" ${BASHRC_FILE}
 
   echo "-------------------------------------------------------------"
   echo "  >> 1.1.4 add alias nodeExec..."
-  sed -i "/^alias masterExec=.*$/aalias nodeExec='_f() { for host in \"\${NODES[@]}\";do ssh ${USER}@\${host} \"sudo \$1\"; done; }; _f'" ${BASHRC_FILE}
+  sed -i "/^alias masterExec=.*$/aalias nodeExec='_f() { for host in \"\${NODES[@]}\";do echo \"Executing in host: \${host}\"; ssh ${USER}@\${host} \"sudo \$@\"; echo ''; done; }; _f'" ${BASHRC_FILE}
 
   echo "-------------------------------------------------------------"
   echo "  >> 1.1.5 add alias ETCD_CONN..."
@@ -1303,7 +1316,7 @@ EOF
 KUBELET_HOSTNAME_OVERRIDE="##hostip##"
 
 ## use private registry if available
-KUBELET_POD_INFRA_CONTAINER_IMAGE="${REGISTRY}/google_containers/pause-amd64:3.1"
+KUBELET_POD_INFRA_CONTAINER_IMAGE="${REGISTRY}/gcr.io/google_containers/pause-amd64:3.1"
 
 ## bootstrap config file
 KUBELET_BOOTSTRAP_KUBECONFIG="/opt/k8s/conf/bootstrap.kubeconfig"
@@ -2154,8 +2167,8 @@ EOF
   echo "  >> 6.1.8 run calico.yaml in one master node"
   ssh ${USER}@k8s-master1 "sudo ${KUBECTL} create -f /opt/calico/yaml/calico.yaml -n kube-system"
 
-  echo "  >> wait one minute ..."
-  sleep 1m
+  echo "  >> wait for a few minute ..."
+  sleep 5m
 
   echo "  >> 6.1.9 view pod/deployment in all namespace"
   ssh ${USER}@k8s-master1 "sudo ${KUBECTL} get deployment,pod -n kube-system"
@@ -2333,9 +2346,9 @@ unused()
 }
 
 # ------- main body -------------
-declare -ra MASTERS=("k8s-master1" "k8s-master2" "k8s-master3")
-#declare -ra NODES=(${MASTERS[@]} "k8s-node1" "k8s-node2" "k8s-node3")
-declare -ra NODES=(${MASTERS[@]})
+declare -ra MASTERS=(k8s-master1 k8s-master2 k8s-master3)
+#declare -ra NODES=(${MASTERS[@]} k8s-node1 k8s-node2 k8s-node3)
+declare -ra NODES=(${MASTERS[@]} k8s-worker1 k8s-worker2 k8s-worker3)
 declare -i IP=0
 declare -r APP_DIR="/appdata"
 declare -r SSL_DIR="/opt/ssl"
@@ -2344,6 +2357,9 @@ declare -r KUBECTL="/opt/k8s/bin/kubectl"
 declare -r ETCD_VER="3.4.10"
 declare -r REGISTRY="docker-hub:5000"
 declare -r NETWORK_CARD="enp0s3"
+
+echo "MASTERS: ${MASTERS[@]}"
+echo "NODES  : ${NODES[@]}"
 
 clear_all
 preinstall

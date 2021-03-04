@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 declare -r IMAGE=/mnt/rw/docker-image/registry.docker.tar
-declare -r STORAGE=/appdata/registry
+declare -r STORAGE=/appdata
 declare -r SSL_DIR=/opt/ssl
 declare -r DOCKER_HUB=docker-hub:5000
 declare -r VERSION=2.7.1
@@ -57,31 +57,4 @@ function unused()
 {
   sudo mkdir -p /opt/ssl
   sudo openssl req -newkey rsa:2048 -nodes -sha256 -keyout /opt/ssl/registry.key -x509 -days 3650 -out /opt/ssl/registry.crt
-}
-
-function import_docker_image()
-{
-  if [[ $# -eq 0 ]]
-  then
-    return 0
-  fi
-
-  local IMAGE_PATH=${1}
-  local -a FILES=`sudo ls ${IMAGE_PATH}`
-  local tmpfile=""
-  for FILE in ${FILES[@]}
-  do
-    tmpfile=${IMAGE_PATH}/${FILE}
-    if sudo test -f ${tmpfile}
-    then
-      # docker image
-      echo ">> importing docker image file ${tmpfile}..."
-      sudo docker load -i ${tmpfile}
-    else
-      # directory
-      echo "--------------------------------------------"
-      echo "recursive directory ${tmpfile}"
-      import_docker_image ${tmpfile}
-    fi
-  done
 }
