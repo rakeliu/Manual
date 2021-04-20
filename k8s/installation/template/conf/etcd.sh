@@ -1,0 +1,2 @@
+export ETCDCTL_API=3
+export ETCD_CONN=${ETCD_CONN}

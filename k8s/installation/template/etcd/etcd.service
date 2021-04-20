@@ -7,10 +7,10 @@ Documentation=https://github.com/etcd-io/etcd
 
 [Service]
 Type=notify
-WorkingDirectory=/ext/etcd
-EnvironmentFile=/opt/k8s/conf/etcd.conf
+WorkingDirectory=${APP_DIR}/etcd
+EnvironmentFile=${K8S_CONF_DIR}/etcd.conf
 # set GOMAXPROCS to number of processes
-ExecStart=/bin/bash -c "GOMAXPROCS=1 /opt/k8s/bin/etcd"
+ExecStart=/bin/bash -c "GOMAXPROCS=1 ${K8S_BIN_DIR}/etcd"
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536

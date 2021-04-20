@@ -1,0 +1,13 @@
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+bindAddress: ${ip}
+clientConnection:
+  kubeconfig: ${K8S_CONF_DIR}/kube-proxy.kubeconfig
+clusterCIDR: ${POD_IP_SEGMENT}.0/16
+healthzBindAddress: ${ip}:10256
+hostnameOverride: ${hostname}
+ipvs:
+  minSyncPeriod: 5s
+  scheduler: rr
+kind: KubeProxyConfiguration
+metricsBindAddress: ${ip}:10249
+mode: ipvs

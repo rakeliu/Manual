@@ -8,7 +8,7 @@ declare -r VERSION=2.7.1
 
 echo "Checking registry running..."
 docker ps -a | grep '\ registry$' > /dev/null
-if [[ $? -eq 0 ]]
+if [ $? -eq 0 ]
 then
   echo "Stop & Remove previous registry..."
   docker stop registry > /dev/null
@@ -29,7 +29,7 @@ then
   echo "  directory exists!"
 else
   sudo mkdir -pv ${STORAGE}
-  echo -e "\n"
+  echo ""
 fi
 
 echo "Starting private registry server on secure mode..."
@@ -47,12 +47,14 @@ echo -e "Started!\n"
 docker container ps
 
 # do not copy below
-echo "configure local certificate"
-declare -r DOCKER_CERTS_DIR="/etc/docker/certs.d/${DOCKER_HUB}"
-sudo mkdir -pv ${DOCKER_CERTS_DIR}
-sudo cp -fv "${SSL_DIR}/registry.crt" "${DOCKER_CERTS_DIR}/ca.crt"
-sudo systemctl restart docker
-
+function cp_key()
+{
+  echo "configure local certificate"
+  declare -r DOCKER_CERTS_DIR="/etc/docker/certs.d/${DOCKER_HUB}"
+  sudo mkdir -pv ${DOCKER_CERTS_DIR}
+  sudo cp -fv "${SSL_DIR}/registry.crt" "${DOCKER_CERTS_DIR}/ca.crt"
+  sudo systemctl restart docker
+}
 function unused()
 {
   sudo mkdir -p /opt/ssl

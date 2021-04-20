@@ -1,0 +1,8 @@
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: cluster-ipv4-ippool
+spec:
+  cidr: ${POD_IP_SEGMENT}.0/16
+  ipipMode: CrossSubnet
+  natOutgoing: true

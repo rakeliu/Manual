@@ -1,0 +1,21 @@
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/kubernetes/kubernetes
+After=kube-apiserver.service
+Wants=kube-apiserver.service
+
+[Service]
+EnvironmentFile=${K8S_CONF_DIR}/kube-scheduler.conf
+ExecStart=${K8S_BIN_DIR}/kube-scheduler \
+  --bind-address=127.0.0.1 \
+  --kubeconfig=${KUBE_SCHEDULER_CONFIG} \
+  --leader-elect=true \
+  --alsologtostderr=true \
+  --logtostderr=false \
+  --log-dir=${KUBE_SCHEDULER_LOG_DIR} \
+  --v=4
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

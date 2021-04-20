@@ -1,0 +1,108 @@
+# Deploying Kibana
+# Including RBAC, ConfigMap, Secret, Deployment,Ingress
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-logging
+  namespace: kube-system
+  labels:
+    k8s-app: kibana-logging
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana-logging
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana-logging
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+    spec:
+      containers:
+      - name: kibana-logging
+        image: ${DOCKER_HUB}/docker.elastic.co/kibana/kibana-oss:7.2.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          # need more cpu upon initializtion, therefore burstatble class
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: http://elasticsearch-logging:9200
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SERVER_NAME
+          value: kibana-logging
+        - name: SERVER_BASEPATH
+          #value: /api/v1/namespaces/$(POD_NAMESPACE)/services/kibana-logging/proxy
+          # for ingressk, keep SERVER_BASEPATH empty
+          value: ""
+        - name: SERVER_REWRITEBASEPATH
+          value: "false"
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/status
+            port: ui
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status
+            port: ui
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-logging
+  namespace: kube-system
+  labels:
+    k8s-app: kibana-logging
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    kubernetes.io/name: "Kibana"
+spec:
+  type: ClusterIP
+  selector:
+    k8s-app: kibana-logging
+  ports:
+  - port: 5601
+    protocol: TCP
+    targetPort: ui
+
+---
+# ingress for kibana
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-4-kibana
+  namespace: kube-system
+  annotations:
+    kubernetes.io/ingress.allow-https: "false"
+    nginx.ingress.kubernetes.io/rewrite: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kibana.k8s.vm
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: kibana-logging
+          servicePort: 5601

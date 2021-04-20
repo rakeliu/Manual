@@ -1,0 +1,17 @@
+{
+  "CN": "kubernetes-dashboard",
+  "hosts": [],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "Chongqing",
+      "L": "Chongqing",
+      "O": "k8s",
+      "OU": "ymliu"
+    }
+  ]
+}

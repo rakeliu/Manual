@@ -1,0 +1,2 @@
+K8S_HOME=${K8S_BASE_DIR}
+export PATH=$PATH:$K8S_HOME/bin
