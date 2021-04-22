@@ -42,10 +42,10 @@ function check_pkgs_efk()
 function deploy_efk()
 {
   echo "-------------------------------------------------------------"
-  echo "Deploying kubernetes coreDNS"
+  echo "Deploying kubernetes Elasticsearch-logging, Fluentd, Kibana."
 
-  # building coredns.yaml
-  echo -n "Building coredns.yaml..."
+  # building yamls
+  echo -n "Building efks' yaml files..."
 
   cp -Rf ${TEMPLATE_DIR}/addons/efk ${TMP_DIR}
   # storageclass
@@ -60,8 +60,9 @@ function deploy_efk()
   # kibana
   sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/efk/30-kibana-deploy-all.yaml
   echo "ok"
+  echo ""
 
-  # deploy coredns.yaml
+  # deploy all yamls
   echo "Deploying efk yaml files..."
   sudo chown -R root:root ${TMP_DIR}/efk
   sudo cp -Rf ${TMP_DIR}/efk ${K8S_YAML_DIR}
@@ -96,6 +97,6 @@ check_pkgs_efk
 
 deploy_efk
 
-#clearTemporary
+clearTemporary
 
 echo ""

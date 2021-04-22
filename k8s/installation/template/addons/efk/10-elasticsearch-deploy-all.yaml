@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: es-config-7.9.1
+  name: es-config-7.12.0
   namespace: kube-system
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
@@ -60,6 +60,21 @@ roleRef:
   apiGroup: ""
 
 ---
+# PersistentVolumeClaim, elasticsearch-loggin
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elasticsearch-logging-claim
+  namespace: kube-system
+spec:
+  storageClassName: nfs-dynamic-system
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
+---
 # ElasticSearch deployment (Statefulset)
 apiVersion: apps/v1
 kind: StatefulSet
@@ -68,7 +83,7 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: elasticsearch-logging
-    version: 7.9.1
+    version: 7.12.0
     addonmanager.kubernetes.io/mode: Reconcile
 spec:
   serviceName: elasticsearch-logging
@@ -76,17 +91,17 @@ spec:
   selector:
     matchLabels:
       k8s-app: elasticsearch-logging
-      version: 7.9.1
+      version: 7.12.0
   template:
     metadata:
       labels:
         k8s-app: elasticsearch-logging
-        version: 7.9.1
+        version: 7.12.0
     spec:
       serviceAccountName: elasticsearch-logging
       containers:
       - name: elasticsearch-logging
-        image: ${DOCKER_HUB}/elasticsearch:7.9.1
+        image: ${DOCKER_HUB}/elasticsearch:7.12.0
         imagePullPolicy: IfNotPresent
         resources:
           # need more cpu upon initializtion, therefore burstatble class
@@ -142,16 +157,10 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: es-config-7.9.1
-  volumeClaimTemplates:
-  - metadata:
-      name: elasticsearch-logging
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: nfs-dynamic-system
-      resources:
-        requests:
-          storage: 5Gi
+          name: es-config-7.12.0
+      - name: elasticsearch-logging
+        persistentVolumeClaim:
+          claimName: elasticsearch-logging-claim
 
 ---
 # Service

@@ -11,6 +11,8 @@
 # History      : 2021-03-30 initialized.
 #                2021-03-31 renamed.
 #                2021-04-06 function undeploy_yaml add processing direcotry.
+#                2021-04-19 add adapter for single/cluster master(s)
+#                2021-04-21 function undeploy_yaml be suitable for *.yaml
 
 # ------ function declaration ---------------------------------------
 # init_env_common
@@ -138,6 +140,11 @@ function undeploy_yaml()
         echo -n "Removing from directory ${K8S_YAML_DIR}/${yaml} ..."
         sudo ${KUBECTL} delete -Rf "${K8S_YAML_DIR}/${yaml}" >/dev/null 2>&1
         sudo rm -fr "${K8S_YAML_DIR}/${yaml}"
+        echo "ok"
+      elif [ -f "${K8S_YAML_DIR}/${yaml}" ]; then
+        echo -n "Removing from ${K8S_YAML_DIR}/${yaml}..."
+        sudo ${KUBECTL} delete -f "${K8S_YAML_DIR}/${yaml}" >/dev/null 2>&1
+        sudo rm -f "${K8S_YAML_DIR}/${yaml}"
         echo "ok"
       elif [ -f "${K8S_YAML_DIR}/${yaml}.yaml" ]; then
         echo -n "Removing from ${K8S_YAML_DIR}/${yaml}.yaml..."

@@ -531,22 +531,22 @@ roleRef:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: fluentd-es-v3.0.4
+  name: fluentd-es-v3.2.0
   namespace: kube-system
   labels:
     k8s-app: fluentd-es
-    version: v3.0.4
+    version: v3.2.0
     addonmanager.kubernetes.io/mode: Reconcile
 spec:
   selector:
     matchLabels:
       k8s-app: fluentd-es
-      version: v3.0.4
+      version: v3.2.0
   template:
     metadata:
       labels:
         k8s-app: fluentd-es
-        version: v3.0.4
+        version: v3.2.0
       # This annotation ensures that fluentd does not get evicted if the node
       # supports cirtical pod annotation based priority scheme.
       # Not that this does not grarantee admission on the nodes (#40573).
@@ -559,7 +559,7 @@ spec:
       #  beta.kubernetes.io/fluentd-ds-ready: "true"
       containers:
       - name: fluentd-es
-        image: ${DOCKER_HUB}/quay.io/fluentd_elasticsearch/fluentd:v3.0.4
+        image: ${DOCKER_HUB}/quay.io/fluentd_elasticsearch/fluentd:v3.2.0
         imagePullPolicy: IfNotPresent
         env:
         - name: FLUENTD_ARGS

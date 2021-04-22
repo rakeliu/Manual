@@ -2,14 +2,14 @@
 
 # This script is used for setup k8s+calico all configurations in only one node
 #
-# FileName     : install-k8s-service-single.sh
+# FileName     : install-k8s-service.sh
 # Path         : ~/bin/
 # Author       : ymliu
 # Create Date  : 2021-04-20 10:31
 # WorkFlow     : To clear installation information & setup k8s with calico.
 #                per service install on each hosts & startup service.
 #
-# History      : 2021-04-20 copy from install-k8s-service.sh to be modified
+# History      : 2021-04-20 copy from old install-k8s-service.sh to be modified
 
 # ------ function declaration ---------------------------------------
 # Showing infomation prepared
@@ -414,6 +414,7 @@ function deploy_ha()
   local -r HAPROXY_CFG="${TMP_DIR}/haproxy.cfg"
   cp -f ${TEMPLATE_DIR}/haproxy/haproxy.cfg ${HAPROXY_CFG}
   sed -i "s#\${APP_DIR}#${APP_DIR}\/haproxy#g" ${HAPROXY_CFG}
+  sed -i "s#\${VIP_PORT}#${VIP_PORT}#g" ${HAPROXY_CFG}
   for host in ${MASTERS[@]}; do
     sed -i "/\${server list}$/a \ \ \ \ server  ${host}  $(hostip ${host}):6443  check  inter  2000  fall 2  rise 2 weight 1" ${HAPROXY_CFG}
   done
