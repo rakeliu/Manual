@@ -303,6 +303,23 @@ metadata:
 data:
 
 ---
+# ConfigMap - tcp
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller-tcp
+  namespace: ingress-nginx
+  labels:
+    helm.sh/chart: ingress-nginx-3.1.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/version: 0.35.2
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+data:
+  33306: "mysql/mysql:3306"
+
+---
 # Service-Webhook
 apiVersion: v1
 kind: Service
@@ -381,6 +398,7 @@ spec:
         - --enable-ssl-passthrough
         # default backend service
         - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
+        - --tcp-services-configmap=$(POD_NAMESPACE)/ingress-nginx-controller-tcp
         securityContext:
           capabilities:
             drop:
@@ -430,6 +448,9 @@ spec:
         - name: webhook
           containerPort: 8443
           protocol: TCP
+        - name: mysql
+          containerPort: 3306
+          protocol: TCP
         volumeMounts:
         - name: webhook-cert
           mountPath: /usr/local/certificates/
@@ -474,3 +495,8 @@ spec:
     nodePort: 31443
     protocol: TCP
     targetPort: https
+  - name: mysql
+    port: 3306
+    nodePort: 33306
+    protocol: TCP
+    targetPort: mysql

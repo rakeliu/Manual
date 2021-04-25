@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: mysql
+  labels:
+    k8s-app: mysql
+    version: v8.0
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: mysql
+      version: v8.0
+  template:
+    metadata:
+      labels:
+        k8s-app: mysql
+        version: v8.0
+    spec:
+      containers:
+      - name: mysql
+        image: ${DOCKER_HUB}/mysql/mysql-server:8.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-pwd
+        ports:
+        - containerPort: 3306
+          name: mysql
+        - containerPort: 33060
+          name: mysqlx
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: mysql
+  labels:
+    k8s-app: mysql
+    version: v8.0
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    name: mysql
+  - port: 33060
+    protocol: TCP
+    name: mysqlx
+  selector:
+    k8s-app: mysql
