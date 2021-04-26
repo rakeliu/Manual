@@ -5,24 +5,24 @@ metadata:
   name: mysql
   namespace: mysql
   labels:
-    k8s-app: mysql
-    version: v8.0
+    app: mysql
+    version: v8.0.23
 spec:
   serviceName: mysql
   replicas: 1
   selector:
     matchLabels:
-      k8s-app: mysql
-      version: v8.0
+      app: mysql
+      version: v8.0.23
   template:
     metadata:
       labels:
-        k8s-app: mysql
-        version: v8.0
+        app: mysql
+        version: v8.0.23
     spec:
       containers:
       - name: mysql
-        image: ${DOCKER_HUB}/mysql/mysql-server:8.0
+        image: ${DOCKER_HUB}/mysql/mysql-server:8.0.23
         imagePullPolicy: IfNotPresent
         env:
         - name: MYSQL_ROOT_PASSWORD
@@ -36,12 +36,18 @@ spec:
         - containerPort: 33060
           name: mysqlx
         volumeMounts:
-        - name: mysql-persistent-storage
+        - name: mysql-var-lib
           mountPath: /var/lib/mysql
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-claim
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-var-lib
+    spec:
+      accessModes:
+      - ReadWriteMany
+      storageClassName: nfs-dynamic-mysql
+      resources:
+        requests:
+          storage: 10Gi
 
 ---
 apiVersion: v1
@@ -50,8 +56,8 @@ metadata:
   name: mysql
   namespace: mysql
   labels:
-    k8s-app: mysql
-    version: v8.0
+    app: mysql
+    version: v8.0.23
 spec:
   ports:
   - port: 3306
@@ -61,4 +67,4 @@ spec:
     protocol: TCP
     name: mysqlx
   selector:
-    k8s-app: mysql
+    app: mysql

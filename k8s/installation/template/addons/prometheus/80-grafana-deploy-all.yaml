@@ -34292,7 +34292,7 @@ spec:
           mountPath: /var/lib/grafana
       containers:
       - name: grafana
-        image: ${DOCKER_HUB}/grafana/grafana:7.1.3
+        image: ${DOCKER_HUB}/grafana/grafana:7.5.4
         imagePullPolicy: IfNotPresent
         env: []
         ports:

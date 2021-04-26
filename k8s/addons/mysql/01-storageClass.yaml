@@ -171,19 +171,3 @@ metadata:
 provisioner: nfs-provisioner-mysql
 #allowVolumeExpansion: true
 #reclaimPolicy: Retain
-
----
-# PersistentVolumeClaim, mysql
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-claim
-  namespace: mysql
-spec:
-  ## same as storage define name
-  storageClassName: nfs-dynamic-mysql
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 2Gi
