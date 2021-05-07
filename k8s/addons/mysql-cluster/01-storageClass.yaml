@@ -1,0 +1,173 @@
+# Dynamic PersistentVolume, StorageClass
+
+# ServiceAccount, StorageClass
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-client-provisioner-mysql-cluster
+  namespace: mysql-cluster
+
+---
+# ClusterRole, StorageClass
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nfs-client-provisioner-runner-mysql-cluster
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - storageclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - list
+  - watch
+  - create
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - watch
+  - patch
+  - update
+
+---
+# ClusterRoleBinding, StorageClass
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: run-nfs-client-provisioner-mysql-cluster
+subjects:
+- kind: ServiceAccount
+  name: nfs-client-provisioner-mysql-cluster
+  namespace: mysql-cluster
+roleRef:
+  kind: ClusterRole
+  name: nfs-client-provisioner-runner-mysql-cluster
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role - storageClass
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: leader-locking-nfs-client-provisioner
+  namespace: mysql-cluster
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+
+---
+# RBAC roleBinding, stroage
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: leader-locking-nfs-client-provisioner
+  namespace: mysql-cluster
+subjects:
+- kind: ServiceAccount
+  name: nfs-client-provisioner-mysql-cluster
+  namespace: mysql-cluster
+roleRef:
+  kind: Role
+  name: leader-locking-nfs-client-provisioner
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Deployment, Storage Provisioner
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-provisioner-mysql-cluster
+  namespace: mysql-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: nfs-provisioner-mysql-cluster
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-app: nfs-provisioner-mysql-cluster
+    spec:
+      serviceAccountName: nfs-client-provisioner-mysql-cluster
+      containers:
+      - name: nfs-client-provisioner-mysql-cluster
+        #image: quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
+        image: ${DOCKER_HUB}/quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PROVISIONER_NAME
+          # this value is provided to storageclass calling
+          value: nfs-provisioner-mysql-cluster
+        - name: NFS_SERVER
+          value: ${NFS_SERVER}
+        - name: NFS_PATH
+          value: ${NFS_PATH}
+        volumeMounts:
+        - name: nfs-client-root
+          mountPath: /persistentvolumes
+      volumes:
+      - name: nfs-client-root
+        nfs:
+          server: ${NFS_SERVER}
+          path: ${NFS_PATH}
+
+---
+# StorageClass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-dynamic-mysql-cluster
+  namespace: mysql-cluster
+  ## set as default storageClass
+  # annotations:
+  #   storageclass.kuberentes.io/is-default-class: "true"
+## same as PROVISIONER_NAME in deployment
+provisioner: nfs-provisioner-mysql-cluster
+#allowVolumeExpansion: true
+#reclaimPolicy: Retain
