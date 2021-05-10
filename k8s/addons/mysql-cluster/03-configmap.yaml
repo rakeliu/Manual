@@ -7,30 +7,23 @@ metadata:
     app: mysql-cluster
 data:
   master.cnf: |
-    # master node, only one node
+    # master node, only one node, the sequence is 0.
     [mysqld]
     binlog_format=MiXED
-    log-bin=mysql-bin
     innodb_flush_log_at_trx_commit=1
     sync_binlog=1
   slave.cnf: |
-    # slave node(s), one or multi nodes
+    # slave node(s), one or multi nodes, the sequence is beginning from 1 to more.
     [mysqld]
-    super-read-only
     binlog_format=MiXED
-    log-bin=mysql-bin
     innodb_flush_log_at_trx_commit=1
-  00-modify-mycnf.sh: |
-    sed -i "/^pid-file=.*$/a\!includedir /etc/my.cnf.d" /etc/my.cnf
   10-master-root.sql: |
-    create user 'root'@'%' identified by '${MYSQL_ROOT_PASSWORD}';
+    create user 'root'@'%' identified with mysql_native_password by '${MYSQL_ROOT_PASSWORD}';
     grant all privileges on *.* to 'root'@'%' with grant option;
+    GRANT PROXY ON ''@'' TO 'root'@'%' WITH GRANT OPTION ;
     flush privileges;
   10-slave-export-master.sh: |
-    set -ex
-    if [ -f /var/lib/mysql-cluster/master.dump ]; then
-      echo "Master node's data has been exported!"
-    else
+    if [ ! -f /var/lib/mysql-cluster/master.dump ]; then
       mysqldump -h mysql-cluster-master.${MY_POD_NAMESPACE} -uroot -p${MYSQL_ROOT_PASSWORD} --all-databases --master-data=1 >/var/lib/mysql-cluster/master.dump
     fi
   20-slave.sql: |
@@ -42,5 +35,7 @@ data:
       MASTER_CONNECT_RETRY=10;
     START SLAVE;
     SHOW SLAVE STATUS \G
+  30-slave-readonly.sh: |
+    sed -i "/^\[mysqld\]$/asuper-read-only" /etc/my.cnf.d/slave.cnf
   99-init-end.sh: |
     [ -f /var/lib/mysql-cluster/${HOSTNAME} ] || touch /var/lib/mysql-cluster/${HOSTNAME}

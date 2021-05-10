@@ -3,7 +3,6 @@ kind: ServiceAccount
 metadata:
   name: coredns
   namespace: kube-system
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -60,16 +59,18 @@ data:
           lameduck 5s
         }
         ready
-        kubernetes cluster.local  in-addr.arpa ip6.arpa {
+        kubernetes CLUSTER_DOMAIN REVERSE_CIDRS {
           fallthrough in-addr.arpa ip6.arpa
         }
         prometheus :9153
-        forward . ${OUTTER_DNS}
+        forward . UPSTREAMNAMESERVER {
+          max_concurrent 1000
+        }
         cache 30
         loop
         reload
         loadbalance
-    }
+    }STUBDOMAINS
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -115,7 +116,7 @@ spec:
                topologyKey: kubernetes.io/hostname
       containers:
       - name: coredns
-        image: ${DOCKER_HUB}/coredns/coredns:1.8.3
+        image: docker-hub:5000/coredns/coredns:1.8.3
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -168,7 +169,6 @@ spec:
             items:
             - key: Corefile
               path: Corefile
-
 ---
 apiVersion: v1
 kind: Service
@@ -185,7 +185,7 @@ metadata:
 spec:
   selector:
     k8s-app: kube-dns
-  clusterIP: ${INNER_DNS}
+  clusterIP: CLUSTER_DNS_IP
   ports:
   - name: dns
     port: 53

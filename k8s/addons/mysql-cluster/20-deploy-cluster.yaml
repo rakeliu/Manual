@@ -74,11 +74,9 @@ spec:
           fi
           # If master node starts up on first time, create user 'root'@'%' and backup data.
           # If slave node starts up on first time, import data & change master to.
-          rm -fr /mnt/docker-entrypoint-initdb.d/*.*
-          # To modify /etc/my.cnf, add !includedir line.
-          cp /mnt/config-map/00-modify-mycnf.sh /mnt/docker-entrypoint-initdb.d/
-          [ -f /var/lib/mysql-cluster/${HOSTNAME} ] && exit 0
-          # startup on first time
+          # rm -fr /mnt/docker-entrypoint-initdb.d/*.*
+          # [ -f /var/lib/mysql-cluster/${HOSTNAME} ] && exit 0
+          # The script files (shell & sql) in /docker-entrypoint-initdb.d/ will be run only once.
           if [[ ${ordinal} -eq 0 ]]; then
             # master node
             cp /mnt/config-map/10-master-root.sql /mnt/docker-entrypoint-initdb.d/
@@ -110,6 +108,13 @@ spec:
             secretKeyRef:
               name: mysql-cluster-secret
               key: root-pwd
+        command:
+        - bash
+        - -c
+        - |
+          set -ex
+          echo -e "\n!includedir /etc/my.cnf.d/" >> /etc/my.cnf
+          /entrypoint.sh --defaults-file=/etc/my.cnf
         ports:
         - containerPort: 3306
           name: mysql
@@ -146,6 +151,9 @@ spec:
       - name: config-map
         configMap:
           name: mysql-cluster
+      - name: configmap-init
+        configMap:
+          name: mysql-cluster-init
       - name: docker-initdb
         emptyDir: {}
       - name: mysql-cluster-share
