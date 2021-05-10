@@ -17,6 +17,7 @@ data:
     [mysqld]
     binlog_format=MiXED
     innodb_flush_log_at_trx_commit=1
+    relay-log=${HOSTNAME}-relay-bin
   10-master-root.sql: |
     create user 'root'@'%' identified with mysql_native_password by '${MYSQL_ROOT_PASSWORD}';
     grant all privileges on *.* to 'root'@'%' with grant option;

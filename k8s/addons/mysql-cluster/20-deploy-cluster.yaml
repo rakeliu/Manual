@@ -36,6 +36,8 @@ spec:
         app: mysql-cluster
         version: v8.0.24
     spec:
+      hostname: mysql-cluster
+      subdomain: mysql-cluster-read
       initContainers:
       - name: init-mysql
         image: ${DOCKER_HUB}/mysql/mysql-server:8.0.24
@@ -71,6 +73,7 @@ spec:
             cp /mnt/config-map/master.cnf /mnt/conf.d/
           else
             cp /mnt/config-map/slave.cnf /mnt/conf.d/
+            sed -i "s#\${HOSTNAME}#${HOSTNAME}#g" /mnt/conf.d/slave.cnf
           fi
           # If master node starts up on first time, create user 'root'@'%' and backup data.
           # If slave node starts up on first time, import data & change master to.
@@ -84,6 +87,7 @@ spec:
             # slave node
             cp /mnt/config-map/10-slave-export-master.sh /mnt/docker-entrypoint-initdb.d/
             cp /mnt/config-map/20-slave.sql /mnt/docker-entrypoint-initdb.d/
+            cp /mnt/config-map/30-slave-readonly.sh /mnt/docker-entrypoint-initdb.d/
           fi
           cp /mnt/config-map/99-init-end.sh /mnt/docker-entrypoint-initdb.d/
           # sed environment variables
@@ -108,13 +112,6 @@ spec:
             secretKeyRef:
               name: mysql-cluster-secret
               key: root-pwd
-        command:
-        - bash
-        - -c
-        - |
-          set -ex
-          echo -e "\n!includedir /etc/my.cnf.d/" >> /etc/my.cnf
-          /entrypoint.sh --defaults-file=/etc/my.cnf
         ports:
         - containerPort: 3306
           name: mysql
@@ -125,6 +122,9 @@ spec:
           name: mysql-var-lib
         - mountPath: /var/lib/mysql-cluster
           name: mysql-cluster-share
+        - mountPath: /etc/my.cnf
+          name: configmap-init
+          subPath: etc/my.cnf
         - mountPath: /etc/my.cnf.d
           name: conf
         - mountPath: /docker-entrypoint-initdb.d
@@ -154,6 +154,9 @@ spec:
       - name: configmap-init
         configMap:
           name: mysql-cluster-init
+          items:
+          - key: my.cnf
+            path: etc/my.cnf
       - name: docker-initdb
         emptyDir: {}
       - name: mysql-cluster-share
