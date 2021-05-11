@@ -13,7 +13,7 @@ spec:
   selector:
     app: mysql-cluster
     version: v8.0.24
-    #statefulset.kubernetes.io/pod-name: mysql-cluster-0
+    statefulset.kubernetes.io/pod-name: mysql-cluster-0
   ports:
   - name: mysql
     port: 3306
