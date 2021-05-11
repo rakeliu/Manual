@@ -13,22 +13,21 @@ data:
     innodb_flush_log_at_trx_commit=1
     sync_binlog=1
   slave.cnf: |
-    # slave node(s), one or multi nodes, the sequence is beginning from 1 to more.
+    # slave node(s), one or multi nodes, the sequence is beginning from 1.
     [mysqld]
+    super-read-only
     binlog_format=MiXED
     innodb_flush_log_at_trx_commit=1
     relay-log=${HOSTNAME}-relay-bin
   10-master-root.sql: |
-    create user 'root'@'%' identified with mysql_native_password by '${MYSQL_ROOT_PASSWORD}';
-    grant all privileges on *.* to 'root'@'%' with grant option;
+    CREATE USER 'root'@'%' IDENTIFIED WITH MYSQL_NATIVE_PASSWORD BY '${MYSQL_ROOT_PASSWORD}';
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
     GRANT PROXY ON ''@'' TO 'root'@'%' WITH GRANT OPTION ;
-    flush privileges;
-  10-slave-export-master.sh: |
-    if [ ! -f /var/lib/mysql-cluster/master.dump ]; then
-      mysqldump -h mysql-cluster-master.${MY_POD_NAMESPACE} -uroot -p${MYSQL_ROOT_PASSWORD} --all-databases --master-data=1 >/var/lib/mysql-cluster/master.dump
-    fi
-  20-slave.sql: |
-    source /var/lib/mysql-cluster/master.dump;
+    FLUSH PRIVILEGES;
+  90-master-export.sh: |
+    mysqldump -h localhost -uroot -p${MYSQL_ROOT_PASSWORD} --all-databases --master-data=1 >/var/lib/mysql-cluster/master.dump
+  20-slave-repl.sql: |
+    SOURCE /var/lib/mysql-cluster/master.dump;
     CHANGE MASTER TO
       MASTER_HOST='mysql-cluster-master.${MY_POD_NAMESPACE}',
       MASTER_USER='root',
@@ -37,6 +36,9 @@ data:
     START SLAVE;
     SHOW SLAVE STATUS \G
   30-slave-readonly.sh: |
-    sed -i "/^\[mysqld\]$/asuper-read-only" /etc/my.cnf.d/slave.cnf
+    # Mysqld started with slave.cnf first time, and then exec script files.
+    # So "super-read-only" must be removed from slave.cnf for slaves import from file master.dump.
+    # And then, slaves must run with option "super-read-only".
+    egrep '^super-read-only$' /etc/my.cnf.d/slave.cnf >/dev/null 2>&1 || sed -i "/^\[mysqld\]$/asuper-read-only" /etc/my.cnf.d/slave.cnf
   99-init-end.sh: |
     [ -f /var/lib/mysql-cluster/${HOSTNAME} ] || touch /var/lib/mysql-cluster/${HOSTNAME}

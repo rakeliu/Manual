@@ -73,21 +73,21 @@ spec:
             cp /mnt/config-map/master.cnf /mnt/conf.d/
           else
             cp /mnt/config-map/slave.cnf /mnt/conf.d/
+            # Slaves must be without "super-read-only" for importing data when starting first time.
+            [ ! -f /var/lib/mysql-cluster/${HOSTNAME} ] && sed -i "/super-read-only/d" /mnt/conf.d/slave.cnf
             sed -i "s#\${HOSTNAME}#${HOSTNAME}#g" /mnt/conf.d/slave.cnf
           fi
           # If master node starts up on first time, create user 'root'@'%' and backup data.
           # If slave node starts up on first time, import data & change master to.
           # rm -fr /mnt/docker-entrypoint-initdb.d/*.*
           # [ -f /var/lib/mysql-cluster/${HOSTNAME} ] && exit 0
-          # The script files (shell & sql) in /docker-entrypoint-initdb.d/ will be run only once.
+          # The script files (shell & sql) in /docker-entrypoint-initdb.d/ will be run only once in sequence.
           if [[ ${ordinal} -eq 0 ]]; then
             # master node
-            cp /mnt/config-map/10-master-root.sql /mnt/docker-entrypoint-initdb.d/
+            cp /mnt/config-map/??-master-*.* /mnt/docker-entrypoint-initdb.d/
           else
             # slave node
-            cp /mnt/config-map/10-slave-export-master.sh /mnt/docker-entrypoint-initdb.d/
-            cp /mnt/config-map/20-slave.sql /mnt/docker-entrypoint-initdb.d/
-            cp /mnt/config-map/30-slave-readonly.sh /mnt/docker-entrypoint-initdb.d/
+            cp /mnt/config-map/??-slave-*.* /mnt/docker-entrypoint-initdb.d/
           fi
           cp /mnt/config-map/99-init-end.sh /mnt/docker-entrypoint-initdb.d/
           # sed environment variables
