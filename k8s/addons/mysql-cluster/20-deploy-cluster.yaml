@@ -93,6 +93,8 @@ spec:
           # sed environment variables
           sed -i "s#\${MYSQL_ROOT_PASSWORD}#${MYSQL_ROOT_PASSWORD}#g" /mnt/docker-entrypoint-initdb.d/*.*
           sed -i "s#\${MY_POD_NAMESPACE}#${MY_POD_NAMESPACE}#g" /mnt/docker-entrypoint-initdb.d/*.*
+          # Check initialize completed by checking file flag, removing /var/lib/mysql/* if flag does not exist.
+          [ -f /var/lib/mysql-cluster/${HOSTNAME} ] || rm -fr /var/lib/mysql/*
         volumeMounts:
         - mountPath: /mnt/config-map
           name: config-map
@@ -102,6 +104,8 @@ spec:
           name: docker-initdb
         - mountPath: /var/lib/mysql-cluster
           name: mysql-cluster-share
+        - mountPath: /var/lib/mysql
+          name: mysql-var-lib
       containers:
       - name: mysql-cluster
         image: ${DOCKER_HUB}/mysql/mysql-server:8.0.24

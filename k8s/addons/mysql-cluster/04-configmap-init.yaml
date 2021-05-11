@@ -40,6 +40,10 @@ data:
     character-set-server=utf8mb4
     collation-server=utf8mb4_unicode_ci
 
+    default-time_zone=+8:00
+
+    binlog_format=MiXED
+    innodb_flush_log_at_trx_commit=1
     log-bin-trust-function-creators=1
 
     !includedir /etc/my.cnf.d

@@ -9,15 +9,11 @@ data:
   master.cnf: |
     # master node, only one node, the sequence is 0.
     [mysqld]
-    binlog_format=MiXED
-    innodb_flush_log_at_trx_commit=1
     sync_binlog=1
   slave.cnf: |
     # slave node(s), one or multi nodes, the sequence is beginning from 1.
     [mysqld]
     super-read-only
-    binlog_format=MiXED
-    innodb_flush_log_at_trx_commit=1
     relay-log=${HOSTNAME}-relay-bin
   10-master-root.sql: |
     CREATE USER 'root'@'%' IDENTIFIED WITH MYSQL_NATIVE_PASSWORD BY '${MYSQL_ROOT_PASSWORD}';
@@ -37,8 +33,8 @@ data:
     SHOW SLAVE STATUS \G
   30-slave-readonly.sh: |
     # Mysqld started with slave.cnf first time, and then exec script files.
-    # So "super-read-only" must be removed from slave.cnf for slaves import from file master.dump.
-    # And then, slaves must run with option "super-read-only".
-    egrep '^super-read-only$' /etc/my.cnf.d/slave.cnf >/dev/null 2>&1 || sed -i "/^\[mysqld\]$/asuper-read-only" /etc/my.cnf.d/slave.cnf
+    # So "super-read-only" must be removed from slave.cnf for slaves import master data.
+    # And then, slaves should restart with option "super-read-only".
+    sed -i "/^\[mysqld\]$/asuper-read-only" /etc/my.cnf.d/slave.cnf
   99-init-end.sh: |
-    [ -f /var/lib/mysql-cluster/${HOSTNAME} ] || touch /var/lib/mysql-cluster/${HOSTNAME}
+    touch /var/lib/mysql-cluster/${HOSTNAME}
