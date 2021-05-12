@@ -494,6 +494,8 @@ function deploy_kubernetes()
 
   deploy_k8s_proxy
 
+  deploy_k8s_fix_tz
+
   deploy_calico
 }
 
@@ -1027,6 +1029,14 @@ function deploy_k8s_proxy()
 
   echo "------ Ending of deploy kubernetes kube-proxy ---------------"
   sleep 2s
+  echo ""
+}
+
+# add PodPreset to fix TZ for namespace of kube-system
+function deploy_k8s_fix_tz()
+{
+  scp ${TEMPLATE_DIR}/addons/podpreset-tz-env.yaml ${USER}@${EXEC_NODE}:${TMP_DIR} >/dev/null 2>&1
+  ssh ${USER}@${EXEC_NODE} "sudo ${KUBECTL} apply -f ${TMP_DIR}/podpreset-tz-env.yaml"
   echo ""
 }
 
