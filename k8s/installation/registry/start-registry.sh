@@ -37,6 +37,7 @@ docker run -d -p 5000:5000 --restart=always \
   --name=registry \
   -v ${STORAGE}:/var/lib/registry \
   -v ${SSL_DIR}:/certs \
+  -e TZ=Asia/Shanghai \
   -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
   -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
   -e REGISTRY_STORAGE_DELETE_ENABLED=true \

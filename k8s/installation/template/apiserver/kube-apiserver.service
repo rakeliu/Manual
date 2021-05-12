@@ -7,12 +7,12 @@ Wants=etcd.service
 [Service]
 EnvironmentFile=${K8S_CONF_DIR}/kube-apiserver.conf
 ExecStart=${K8S_BIN_DIR}/kube-apiserver \
-  --enable-admission-plugins=${KUBE_ADMISSION_CONTROL} \
+  --enable-admission-plugins=${KUBE_APISERVER_ADMISSION_CONTROL} \
   --anonymous-auth=false \
   --advertise-address=${KUBE_API_ADDRESS} \
   --bind-address=${KUBE_API_ADDRESS} \
   --authorization-mode=Node,RBAC \
-  --runtime-config=api/all=true \
+  --runtime-config=${KUBE_APISERVER_RUNTIME_CONFIG} \
   --enable-bootstrap-token-auth \
   --token-auth-file=${KUBE_TOKEN_AUTH_FILE} \
   --service-cluster-ip-range=${KUBE_SERVICE_CLUSTER_IP_RANGE} \
