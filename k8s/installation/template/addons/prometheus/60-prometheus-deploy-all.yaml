@@ -259,7 +259,7 @@ metadata:
   name: prometheus-claim
   namespace: monitoring
 spec:
-  storageClassName: nfs-dynamic-monitoring
+  storageClassName: nfs-dynamic-pvc
   accessModes:
   - ReadWriteMany
   resources:

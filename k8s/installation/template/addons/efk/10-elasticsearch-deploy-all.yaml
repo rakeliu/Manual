@@ -67,7 +67,7 @@ metadata:
   name: elasticsearch-logging-claim
   namespace: kube-system
 spec:
-  storageClassName: nfs-dynamic-system
+  storageClassName: nfs-dynamic-pvc
   accessModes:
   - ReadWriteMany
   resources:

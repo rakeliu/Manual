@@ -19,7 +19,6 @@ function undeploy_efk()
     "efk/30-kibana-deploy-all.yaml"
     "efk/20-fluentd-deploy-all.yaml"
     "efk/10-elasticsearch-deploy-all.yaml"
-    "efk/01-storageclass.yaml"
   )
 
   undeploy_yaml ${YAMLS[@]}
@@ -32,7 +31,6 @@ function check_pkgs_efk()
 {
   echo "-------------------------------------------------------------"
   echo "Checking installation packages..."
-  check_pkg "addons/efk/01-storageclass.yaml"
   check_pkg "addons/efk/10-elasticsearch-deploy-all.yaml"
   check_pkg "addons/efk/20-fluentd-deploy-all.yaml"
   check_pkg "addons/efk/30-kibana-deploy-all.yaml"
@@ -48,10 +46,6 @@ function deploy_efk()
   echo -n "Building efks' yaml files..."
 
   cp -Rf ${TEMPLATE_DIR}/addons/efk ${TMP_DIR}
-  # storageclass
-  sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/efk/01-storageclass.yaml
-  sed -i "s#\${NFS_SERVER}#${NFS_SERVER}#g" ${TMP_DIR}/efk/01-storageclass.yaml
-  sed -i "s#\${NFS_PATH}#${NFS_PATH}#g" ${TMP_DIR}/efk/01-storageclass.yaml
   # elasticsearch
   sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/efk/10-elasticsearch-deploy-all.yaml
   # fluentd
@@ -66,8 +60,6 @@ function deploy_efk()
   echo "Deploying efk yaml files..."
   sudo chown -R root:root ${TMP_DIR}/efk
   sudo cp -Rf ${TMP_DIR}/efk ${K8S_YAML_DIR}
-  sudo ${KUBECTL} apply -f ${K8S_YAML_DIR}/efk/01-storageclass.yaml
-  echo ""
   sudo ${KUBECTL} apply -f ${K8S_YAML_DIR}/efk/10-elasticsearch-deploy-all.yaml
   echo ""
   sudo ${KUBECTL} apply -f ${K8S_YAML_DIR}/efk/20-fluentd-deploy-all.yaml

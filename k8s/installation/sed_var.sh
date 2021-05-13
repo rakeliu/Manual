@@ -10,28 +10,30 @@ function _GET_DIR()
   fi
 }
 
-function _SED()
+function _sed_in_map()
 {
-  for dir in ${DIRS[@]}; do
-    echo "sed in directory ${dir}: \${DOCKER_HUB} -- > ${DOCKER_HUB}"
-    sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${dir}/*.yaml
+  local val;
+  local sed_script;
+  for dir in $@; do
+    for key in ${!SED_VAR[*]}; do
+      val=${SED_VAR[${key}]}
+      sed_script="s#\\\${${key}}#${val}#g"
 
-    echo "sed in directory ${dir}: \${NFS_SERVER} -- > ${NFS_SERVER}"
-    sed -i "s#\${NFS_SERVER}#${NFS_SERVER}#g" ${dir}/*.yaml
-
-    echo "sed in directory ${dir}: \${NFS_PATH} -- > ${NFS_PATH}"
-    sed -i "s#\${NFS_PATH}#${NFS_PATH}#g" ${dir}/*.yaml
+      echo "sed in directory ${dir}: \${${key}} --> ${val}"
+      sed -i "${sed_script}" ${dir}/*.yaml
+    done
   done
 }
 
 declare -r SHELL_DIR="$(cd "$(dirname "${0}")" && pwd)"
-
-declare -r DOCKER_HUB="docker-hub:5000"
-
-declare -r NFS_SERVER="192.168.176.8"
-declare -r NFS_PATH="/appdata/nfs"
-
 declare -ra DIRS=($(_GET_DIR $@))
 
+# declare map
+declare -A SED_VAR
+SED_VAR["DOCKER_HUB"]="docker-hub:5000"
+
+SED_VAR["NFS_SERVER"]="192.168.176.8"
+SED_VAR["NFS_PATH"]="/appdata/nfs"
+
 # -------- main -----------
-_SED
+_sed_in_map ${DIRS[@]}

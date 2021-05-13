@@ -18,7 +18,7 @@ metadata:
   namespace: monitoring
 spec:
   ## same as storage define name
-  storageClassName: nfs-dynamic-monitoring
+  storageClassName: nfs-dynamic-pvc
   accessModes:
   - ReadWriteMany
   resources:

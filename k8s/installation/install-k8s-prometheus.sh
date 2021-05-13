@@ -40,7 +40,6 @@ function undeploy_prometheus()
     "prometheus/12-operator-customResourceDefinition-alertmanager"
     "prometheus/11-operator-customResourceDefinition-altermanagerConfig"
     "prometheus/10-operator-deploy-all"
-    "prometheus/01-storageclass"
     "prometheus/00-namespace"  )
 
   undeploy_yaml ${YAMLS[@]}
@@ -55,7 +54,6 @@ function check_pkgs_prometheus()
   echo "Checking installation packages..."
 
   check_pkg "addons/prometheus/00-namespace.yaml"
-  check_pkg "addons/prometheus/01-storageclass.yaml"
   check_pkg "addons/prometheus/10-operator-deploy-all.yaml"
   check_pkg "addons/prometheus/11-operator-customResourceDefinition-altermanagerConfig.yaml"
   check_pkg "addons/prometheus/12-operator-customResourceDefinition-alertmanager.yaml"
@@ -93,10 +91,6 @@ function deploy_prometheus()
   cp -fR ${TEMPLATE_DIR}/addons/prometheus ${TMP_DIR}/
   local -i REPLICAS=1
   # namespace
-  # storageclass
-  sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/prometheus/01-storageclass.yaml
-  sed -i "s#\${NFS_SERVER}#${NFS_SERVER}#g" ${TMP_DIR}/prometheus/01-storageclass.yaml
-  sed -i "s#\${NFS_PATH}#${NFS_PATH}#g" ${TMP_DIR}/prometheus/01-storageclass.yaml
   # operator
   sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/prometheus/10-operator-deploy-all.yaml
   # kube-state-metrics
@@ -124,9 +118,8 @@ function deploy_prometheus()
   echo ""
 
   pushd ${K8S_YAML_DIR}/prometheus >/dev/null 2>&1
-  echo "Deploying namespace, storageclass..."
+  echo "Deploying namespace..."
   sudo ${KUBECTL} apply -f 00-namespace.yaml
-  sudo ${KUBECTL} apply -f 01-storageclass.yaml
   sleep 2s
   echo ""
 

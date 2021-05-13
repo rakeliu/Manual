@@ -3,11 +3,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-cluster-share
+  name: share
   namespace: mysql-cluster
 spec:
   ## same as storage define name
-  storageClassName: nfs-dynamic-mysql-cluster
+  storageClassName: nfs-dynamic-pvc
   accessModes:
   - ReadWriteMany
   resources:
@@ -103,7 +103,7 @@ spec:
         - mountPath: /mnt/docker-entrypoint-initdb.d/
           name: docker-initdb
         - mountPath: /var/lib/mysql-cluster
-          name: mysql-cluster-share
+          name: share
         - mountPath: /var/lib/mysql
           name: mysql-var-lib
       containers:
@@ -125,7 +125,7 @@ spec:
         - mountPath: /var/lib/mysql
           name: mysql-var-lib
         - mountPath: /var/lib/mysql-cluster
-          name: mysql-cluster-share
+          name: share
         - mountPath: /etc/my.cnf
           name: configmap-init
           subPath: etc/my.cnf
@@ -163,16 +163,16 @@ spec:
             path: etc/my.cnf
       - name: docker-initdb
         emptyDir: {}
-      - name: mysql-cluster-share
+      - name: share
         persistentVolumeClaim:
-          claimName: mysql-cluster-share
+          claimName: share
   volumeClaimTemplates:
   - metadata:
       name: mysql-var-lib
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: nfs-dynamic-mysql-cluster
+      storageClassName: nfs-dynamic-pvc
       resources:
         requests:
           storage: 3Gi

@@ -4,15 +4,15 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: nfs-client-provisioner-mysql
-  namespace: mysql
+  name: nfs-client-provisioner
+  namespace: default
 
 ---
 # ClusterRole, StorageClass
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: nfs-client-provisioner-runner-mysql
+  name: nfs-client-provisioner-runner
 rules:
 - apiGroups:
   - ""
@@ -69,14 +69,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: run-nfs-client-provisioner-mysql
+  name: run-nfs-client-provisioner
 subjects:
 - kind: ServiceAccount
-  name: nfs-client-provisioner-mysql
-  namespace: mysql
+  name: nfs-client-provisioner
+  namespace: default
 roleRef:
   kind: ClusterRole
-  name: nfs-client-provisioner-runner-mysql
+  name: nfs-client-provisioner-runner
   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -85,7 +85,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: leader-locking-nfs-client-provisioner
-  namespace: mysql
+  namespace: default
 rules:
 - apiGroups:
   - ""
@@ -105,11 +105,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: leader-locking-nfs-client-provisioner
-  namespace: mysql
+  namespace: default
 subjects:
 - kind: ServiceAccount
-  name: nfs-client-provisioner-mysql
-  namespace: mysql
+  name: nfs-client-provisioner
+  namespace: default
 roleRef:
   kind: Role
   name: leader-locking-nfs-client-provisioner
@@ -120,21 +120,21 @@ roleRef:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nfs-provisioner-mysql
-  namespace: mysql
+  name: nfs-provisioner
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      k8s-app: nfs-provisioner-mysql
+      k8s-app: nfs-provisioner
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        k8s-app: nfs-provisioner-mysql
+        k8s-app: nfs-provisioner
     spec:
-      serviceAccountName: nfs-client-provisioner-mysql
+      serviceAccountName: nfs-client-provisioner
       containers:
       - name: nfs-client-provisioner-mysql
         #image: quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
@@ -143,7 +143,7 @@ spec:
         env:
         - name: PROVISIONER_NAME
           # this value is provided to storageclass calling
-          value: nfs-provisioner-mysql
+          value: nfs-provisioner-pvc
         - name: NFS_SERVER
           value: ${NFS_SERVER}
         - name: NFS_PATH
@@ -162,12 +162,12 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: nfs-dynamic-mysql
-  namespace: mysql
+  name: nfs-dynamic-pvc
+  namespace: default
   ## set as default storageClass
-  # annotations:
-  #   storageclass.kuberentes.io/is-default-class: "true"
+  annotations:
+    storageclass.kuberentes.io/is-default-class: "true"
 ## same as PROVISIONER_NAME in deployment
-provisioner: nfs-provisioner-mysql
-#allowVolumeExpansion: true
+provisioner: nfs-provisioner-pvc
+allowVolumeExpansion: true
 #reclaimPolicy: Retain

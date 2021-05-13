@@ -44,10 +44,10 @@ spec:
     spec:
       accessModes:
       - ReadWriteMany
-      storageClassName: nfs-dynamic-mysql
+      storageClassName: nfs-dynamic-pvc
       resources:
         requests:
-          storage: 10Gi
+          storage: 2Gi
 
 ---
 apiVersion: v1
