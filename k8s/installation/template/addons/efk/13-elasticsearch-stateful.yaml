@@ -1,0 +1,87 @@
+# ElasticSearch deployment (Statefulset)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch-logging
+  namespace: kube-system
+  labels:
+    k8s-app: elasticsearch-logging
+    version: 7.12.0
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  serviceName: elasticsearch-logging
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: elasticsearch-logging
+      version: 7.12.0
+  template:
+    metadata:
+      labels:
+        k8s-app: elasticsearch-logging
+        version: 7.12.0
+    spec:
+      serviceAccountName: elasticsearch-logging
+      # Elasticsearch requires vm.max_map_count to be at least 262144,
+      # If your OS already set up this number to a higher value, feel free
+      # to remove this init container.
+      initContainers:
+      - name: elasticsearch-logging-init
+        image: ${DOCKER_HUB}/alpine:3.12.0
+        command: ["/sbin/sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: elasticsearch-logging
+        image: ${DOCKER_HUB}/elasticsearch:7.12.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          # need more cpu upon initializtion, therefore burstatble class
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 1Gi
+        ports:
+        - containerPort: 9200
+          name: db
+          protocol: TCP
+        - containerPort: 9300
+          name: transport
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: transport
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: transport
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: elasticsearch-logging
+          mountPath: /data
+        - name: config-volume
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+        env:
+        - name: "NAMESPACE"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      volumes:
+      - name: config-volume
+        configMap:
+          name: es-config-7.12.0
+  volumeClaimTemplates:
+  - metadata:
+      name: elasticsearch-logging
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: nfs-dynamic-pvc
+      resources:
+        requests:
+          storage: 5Gi

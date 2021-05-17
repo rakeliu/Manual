@@ -1,0 +1,15 @@
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: es-config-7.12.0
+  namespace: kube-system
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+  elasticsearch.yml: |-
+    cluster.name: kubernetes-logging
+    node.name: elasticsearch-logging-0
+    path.data: /data
+    discovery.type: single-node
+    network.host: 0.0.0.0

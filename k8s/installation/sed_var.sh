@@ -30,10 +30,13 @@ declare -ra DIRS=($(_GET_DIR $@))
 
 # declare map
 declare -A SED_VAR
+# docker-hub setting
 SED_VAR["DOCKER_HUB"]="docker-hub:5000"
-
+# nfs setting
 SED_VAR["NFS_SERVER"]="192.168.176.8"
 SED_VAR["NFS_PATH"]="/appdata/nfs"
+# docker setting
+SED_VAR["DOCKER_DATA_ROOT"]="/appdata/docker"
 
 # -------- main -----------
 _sed_in_map ${DIRS[@]}
