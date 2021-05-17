@@ -1,0 +1,17 @@
+# ConfigMap - tcp
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller-tcp
+  namespace: ingress-nginx
+  labels:
+    helm.sh/chart: ingress-nginx-3.1.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/version: 0.35.2
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+data:
+  3306: "mysql/mysql:3306"
+  3316: "mysql-cluster/mysql-cluster-read:3306"
+  3317: "mysql-cluster/mysql-cluster-master:3306"

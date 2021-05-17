@@ -63,6 +63,16 @@ function deploy_ingress()
 declare -r SHELL_DIR="$(cd "$(dirname "${0}")" && pwd)"
 . ${SHELL_DIR}/install-k8s-common.sh
 
+echo ""
+echo "DEPRECATED!"
+echo "  This script is DEPRECATED now and future!"
+echo "  It recommands deply ingress by manual."
+echo "  You should replace environment variables in yaml files using sed cli."
+echo ""
+echo "  And then, you should run install-k8s-dashboard.sh to deploy Kubernetes-Dashboards!"
+exit 1
+
+
 undeploy_ingress
 
 check_pkgs_ingress

@@ -1,0 +1,14 @@
+# service default-http-backend
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-http-backend
+  namespace: ingress-nginx
+  labels:
+    k8s-app: default-http-backend
+spec:
+  selector:
+    k8s-app: default-http-backend
+  ports:
+  - port: 80
+    targetPort: 8080
