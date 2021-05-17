@@ -15,7 +15,7 @@ function undeploy_ingress()
   echo "-------------------------------------------------------------"
   echo "Undeploy kubernetes addons : ingress"
 
-  undeploy_yaml "ingress-controller" "ingress-admission-webhook" "ingress-namespace"
+  undeploy_yaml "20-ingress-controller" "10-ingress-admission-webhook" "00-ingress-namespace"
 
   echo ""
 }
@@ -24,9 +24,9 @@ function check_pkgs_ingress()
 {
   echo "-------------------------------------------------------------"
   echo "Checking installation packages..."
-  check_pkg "addons/ingress/ingress-namespace.yaml"
-  check_pkg "addons/ingress/ingress-admission-webhook.yaml"
-  check_pkg "addons/ingress/ingress-controller.yaml"
+  check_pkg "addons/ingress/00-ingress-namespace.yaml"
+  check_pkg "addons/ingress/10-ingress-admission-webhook.yaml"
+  check_pkg "addons/ingress/20-ingress-controller.yaml"
   echo ""
 }
 
@@ -36,19 +36,19 @@ function deploy_ingress()
   echo "Deploying kubernetes addons - ingress"
 
   echo -n "Building ingress - namespace,admission,controller yaml files..."
-  cp -f ${TEMPLATE_DIR}/addons/ingress/ingress-{controller,admission-webhook}.yaml ${TMP_DIR}
-  sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/ingress-controller.yaml
-  sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/ingress-admission-webhook.yaml
-  sudo cp ${TMP_DIR}/ingress-{controller,admission-webhook}.yaml ${TEMPLATE_DIR}/addons/ingress/ingress-namespace.yaml ${K8S_YAML_DIR}
-  sudo chown root:root ${K8S_YAML_DIR}/ingress-{namespace,controller,admission-webhook}.yaml
+  cp -f ${TEMPLATE_DIR}/addons/ingress/??-ingress-*.yaml ${TMP_DIR}
+  sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/20-ingress-controller.yaml
+  sed -i "s#\${DOCKER_HUB}#${DOCKER_HUB}#g" ${TMP_DIR}/10-ingress-admission-webhook.yaml
+  sudo cp ${TMP_DIR}/??-ingress-*.yaml ${K8S_YAML_DIR}
+  sudo chown root:root ${K8S_YAML_DIR}/??-ingress-*.yaml
   echo "ok"
 
   # deploy yaml in sequence
   echo "Deploying ingress - namespace,admission,controller yaml files..."
   sudo ${KUBECTL} apply \
-    -f ${K8S_YAML_DIR}/ingress-namespace.yaml \
-    -f ${K8S_YAML_DIR}/ingress-admission-webhook.yaml \
-    -f ${K8S_YAML_DIR}/ingress-controller.yaml
+    -f ${K8S_YAML_DIR}/00-ingress-namespace.yaml \
+    -f ${K8S_YAML_DIR}/10-ingress-admission-webhook.yaml \
+    -f ${K8S_YAML_DIR}/20-ingress-controller.yaml
   echo ""
 
   # view pods in namespace ingress-nginx
