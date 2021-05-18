@@ -29,17 +29,17 @@ spec:
     protocol: TCP
     targetPort: https
   - name: mysql
-    port: 33306
+    port: 3306
     nodePort: 33306
     protocol: TCP
     targetPort: mysql
   - name: mysqlc-read
-    port: 33316
+    port: 3316
     nodePort: 33316
     protocol: TCP
     targetPort: mysqlc-read
   - name: mysqlc-master
-    port: 33317
+    port: 3317
     nodePort: 33317
     protocol: TCP
     targetPort: mysqlc-master

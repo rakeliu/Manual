@@ -105,13 +105,13 @@ spec:
           containerPort: 8443
           protocol: TCP
         - name: mysql
-          containerPort: 33306
+          containerPort: 3306
           protocol: TCP
         - name: mysqlc-read
-          containerPort: 33016
+          containerPort: 3316
           protocol: TCP
         - name: mysqlc-master
-          containerPort: 33017
+          containerPort: 3317
           protocol: TCP
         volumeMounts:
         - name: webhook-cert
