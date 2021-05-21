@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: create
-        image: ${DOCKER_HUB}/jettech/kube-webhook-certgen:v1.5.1
+        image: ${DOCKER_HUB}/jettech/kube-webhook-certgen:v1.5.2
         imagePullPolicy: IfNotPresent
         args:
         - create

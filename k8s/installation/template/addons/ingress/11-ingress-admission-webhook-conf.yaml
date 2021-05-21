@@ -17,7 +17,7 @@ webhooks:
     - networking.k8s.io
     apiVersions:
     - v1beta1
-    - v1
+#    - v1
     operations:
     - CREATE
     - UPDATE
@@ -27,8 +27,9 @@ webhooks:
   sideEffects: None
   admissionReviewVersions:
   - v1beta1
+  - v1
   clientConfig:
     service:
       namespace: ingress-nginx
       name: ingress-nginx-controller-admission
-      path: /networking/v1beta1/ingresses
+      path: /networking/v1/ingresses

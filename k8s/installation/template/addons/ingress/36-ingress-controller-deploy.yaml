@@ -31,7 +31,7 @@ spec:
       terminationGracePeriodSeconds: 300
       containers:
       - name: controller
-        image: ${DOCKER_HUB}/gcr.io/google_containers/ingress-nginx-controller:v0.41.2
+        image: ${DOCKER_HUB}/gcr.io/google_containers/ingress-nginx-controller:v0.46.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
