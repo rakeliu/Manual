@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: grafana-claim
   namespace: monitoring
+  labels:
+    app: grafana
 spec:
   storageClassName: nfs-dynamic-pvc
   accessModes:
