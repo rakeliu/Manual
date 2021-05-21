@@ -134,6 +134,9 @@ spec:
         runAsNonRoot: true
         runAsUser: 65534
       volumes:
+      - name: grafana-storage
+        persistentVolumeClaim:
+          claimName: grafana-claim
       - name: grafana-datasources
         secret:
           secretName: grafana-datasources
@@ -209,13 +212,3 @@ spec:
       - configMap:
           name: grafana-dashboard-workload-total
         name: grafana-dashboard-workload-total
-  volumeClaimTemplates:
-  - metadata:
-      name: grafana-storage
-    spec:
-      accessModes:
-      - ReadWriteMany
-      storageClassName: nfs-dynamic-pvc
-      resources:
-        requests:
-          storage: 5Gi
