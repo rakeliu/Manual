@@ -1,0 +1,49 @@
+# RBAC
+---
+# blackbox-exporter ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    alertmanager: main
+    app.kubernetes.io/component: alert-router
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 0.21.0
+  name: blackbox-exporter
+  namespace: monitoring
+
+---
+# blackbox-exporter ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: blackbox-exporter
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+
+---
+# blackbox-exporter ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: blackbox-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: blackbox-exporter
+subjects:
+- kind: ServiceAccount
+  name: blackbox-exporter
+  namespace: monitoring
