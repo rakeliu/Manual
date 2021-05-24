@@ -1,0 +1,31 @@
+# AlertManager(Deployment) alertmanager
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  # As serviceName: alertmanager-main
+  name: main
+  namespace: monitoring
+  labels:
+    alertmanager: main
+    app.kubernetes.io/component: alert-router
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 0.21.0
+spec:
+  serviceAccountName: alertmanager-main
+  version: 0.21.0
+  image: ${DOCKER_HUB}/quay.io/prometheus/alertmanager:v0.21.0
+  nodeSelector:
+    kubernetes.io/os: linux
+  podMetadata:
+    labels:
+      app.kubernetes.io/component: alert-router
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: kube-prometheus
+      app.kubernetes.io/version: 0.21.0
+  replicas: 1
+  resources: {}
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000

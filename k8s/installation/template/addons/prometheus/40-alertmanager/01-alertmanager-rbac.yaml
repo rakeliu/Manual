@@ -1,0 +1,12 @@
+# RBAC ServiceAccount alertmanager
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: alertmanager-main
+  namespace: monitoring
+  labels:
+    alertmanager: main
+    app.kubernetes.io/component: alert-router
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 0.21.0
