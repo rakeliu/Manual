@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/component: prometheus
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/part-of: kube-prometheus
-    app.kubernetes.io/version: 2.24.0
+    app.kubernetes.io/version: 2.26.0
     prometheus: k8s
     role: alert-rules
   name: k8s-rules
@@ -212,26 +212,3 @@ spec:
       for: 15m
       labels:
         severity: critical
-
----
-# ServiceMonitor, prometheus
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  labels:
-    app.kubernetes.io/component: prometheus
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/part-of: kube-prometheus
-    app.kubernetes.io/version: 2.24.0
-  name: prometheus
-  namespace: monitoring
-spec:
-  endpoints:
-  - interval: 30s
-    port: web
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: prometheus
-      app.kubernetes.io/name: prometheus
-      app.kubernetes.io/part-of: kube-prometheus
-      prometheus: k8s
