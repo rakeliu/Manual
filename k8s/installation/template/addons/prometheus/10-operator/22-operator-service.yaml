@@ -1,0 +1,21 @@
+# Service prometheus-operator
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-operator
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: prometheus-operator
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 0.47.0
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  selector:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: prometheus-operator
+    app.kubernetes.io/part-of: kube-prometheus
