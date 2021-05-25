@@ -1,0 +1,14 @@
+# Service metrics-scraper
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-metrics-scraper
+  namespace: kubernetes-dashboard
+  labels:
+    k8s-app: dashboard-metrics-scraper
+spec:
+  selector:
+    k8s-app: dashboard-metrics-scraper
+  ports:
+  - port: 8000
+    targetPort: 8000

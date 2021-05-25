@@ -1,0 +1,74 @@
+# Deploymet dashboard
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      k8s-app: kubernetes-dashboard
+  template:
+    metadata:
+      labels:
+        k8s-app: kubernetes-dashboard
+    spec:
+      serviceAccountName: kubernetes-dashboard
+      nodeSelector:
+        kubernetes.io/os: linux
+      # Comment the following tolerations if Dashboard must not be deployed on master
+      # tolerations:
+      # - key: node-role.kubernetes.io/master
+      #   effect: NoSchedule
+      containers:
+      - name: kubernetes-dashboard
+        image: ${DOCKER_HUB}/kubernetesui/dashboard:v2.2.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - --namespace=$(POD_NAMESPACE)
+        # auto generate certification files
+        # - --auto-generate-certificates
+        # specify certification files, comment upstare line.
+        - --tls-cert-file=kubernetes-dashboard.crt
+        - --tls-key-file=kubernetes-dashboard.key
+        # Uncomment the following line to manually specify Kubernetes API server Host
+        # If not specified, Dashboard will attempt to auto discover the API server and connect
+        # to it. Uncomment only if the default does not work.
+        # - --apiserver-host=http://k8s-mini:6443
+        ports:
+        - name: https
+          containerPort: 8443
+          protocol: TCP
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: kubernetes-dashboard-certs
+          mountPath: /certs
+          # Create on-disk volume to store exec logs
+        - mountPath: /tmp
+          name: tmp-volume
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /
+            port: 8443
+          initialDelaySeconds: 30
+          timeoutSeconds: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsUser: 1001
+          runAsGroup: 2001
+      volumes:
+      - name: kubernetes-dashboard-certs
+        secret:
+          secretName: kubernetes-dashboard-certs
+      - name: tmp-volume
+        emptyDir: {}
