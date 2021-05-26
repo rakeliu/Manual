@@ -1,9 +1,10 @@
 # ConfigMap
+# DEPRECATED
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: es-config-7.12.0
-  namespace: kube-system
+  namespace: logging
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 data:

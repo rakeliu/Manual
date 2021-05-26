@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd-es-v3.2.0
-  namespace: kube-system
+  namespace: logging
   labels:
     k8s-app: fluentd-es
     version: v3.2.0
@@ -83,4 +83,4 @@ spec:
           path: ${DOCKER_DATA_ROOT}/containers
       - name: config-volume
         configMap:
-          name: fluentd-es-config-v0.2.0
+          name: fluentd-es-config-v0.2.1

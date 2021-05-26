@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: elasticsearch-logging
-  namespace: kube-system
+  namespace: logging
   labels:
     k8s-app: elasticsearch-logging
     version: 7.12.0
@@ -33,7 +33,7 @@ spec:
           privileged: true
       containers:
       - name: elasticsearch-logging
-        image: ${DOCKER_HUB}/elasticsearch:7.12.0
+        image: ${DOCKER_HUB}/quay.io/fluentd_elasticsearch/elasticsearch:v7.10.2
         imagePullPolicy: IfNotPresent
         resources:
           # need more cpu upon initializtion, therefore burstatble class
@@ -63,18 +63,13 @@ spec:
         volumeMounts:
         - name: elasticsearch-logging
           mountPath: /data
-        - name: config-volume
-          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
-          subPath: elasticsearch.yml
         env:
         - name: "NAMESPACE"
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-      volumes:
-      - name: config-volume
-        configMap:
-          name: es-config-7.12.0
+        - name: "MINIMUM_MASTER_NODES"
+          value: "1"
   volumeClaimTemplates:
   - metadata:
       name: elasticsearch-logging
