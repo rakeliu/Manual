@@ -1208,5 +1208,13 @@ deploy_kubernetes
 clearTemporary
 
 echo ""
-echo "You should run install-k8s-dns.sh to deploy coreDNS!"
+echo "You should deploy addons below in sequence:"
+echo "  1. podPreset & storageClass"
+echo "  2. coreDNS"
+echo "  3. metrics-server"
+echo "  4. ingress"
+echo "  5. kubernetes-dashboard, building key & cert files, injects into secret file."
+echo "  6. efk"
+echo "  7. prometheus"
+echo "  And other pods, such as mysql, mysql-cluster and etc."
 echo ""
